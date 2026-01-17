@@ -5,7 +5,7 @@ namespace BoardGameScraper.Api.Services;
 
 public class DataExportService
 {
-    private const string FileName = "bgg_data_dotnet.json";
+    public string OutputFileName { get; set; } = "bgg_data_dotnet.json";
     private readonly ILogger<DataExportService> _logger;
     private readonly SemaphoreSlim _lock = new(1, 1);
 
@@ -24,11 +24,11 @@ public class DataExportService
             var options = new JsonSerializerOptions { WriteIndented = true };
             List<GameItem> existingData = new();
             
-            if (File.Exists(FileName))
+            if (File.Exists(OutputFileName))
             {
                 try 
                 {
-                    using var stream = File.OpenRead(FileName);
+                    using var stream = File.OpenRead(OutputFileName);
                     existingData = await JsonSerializer.DeserializeAsync<List<GameItem>>(stream, options, ct) ?? new();
                 }
                 catch
@@ -39,10 +39,10 @@ public class DataExportService
 
             existingData.AddRange(games);
 
-            using var writeStream = File.Create(FileName);
+            using var writeStream = File.Create(OutputFileName);
             await JsonSerializer.SerializeAsync(writeStream, existingData, options, ct);
             
-            _logger.LogInformation("Saved {Count} games to {File}. Total: {Total}", games.Count, FileName, existingData.Count);
+            _logger.LogInformation("Saved {Count} games to {File}. Total: {Total}", games.Count, OutputFileName, existingData.Count);
         }
         catch (Exception ex)
         {

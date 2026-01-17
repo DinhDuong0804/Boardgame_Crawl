@@ -19,9 +19,17 @@ builder.Services.AddHostedService<ScraperWorker>();
 
 // Configure HttpClient with Resilience (Polly)
 // BGG Rate Limit defense: Retry on 429/5xx, and standard timeouts
-builder.Services.AddHttpClient<BggDiscoveryService>(client => 
+builder.Services.AddHttpClient<BggDiscoveryService>((sp, client) => 
 {
+    var config = sp.GetRequiredService<IConfiguration>();
+    var token = config["BggApi:AuthToken"];
+
     client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+
+    if (!string.IsNullOrEmpty(token))
+    {
+        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+    }
 })
 .AddStandardResilienceHandler();
 

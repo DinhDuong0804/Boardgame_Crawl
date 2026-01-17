@@ -33,11 +33,15 @@ public class ScraperWorker : BackgroundService
         var batchSize = _config.GetValue<int>("Scraper:BatchSize", 20);
         var startPage = _config.GetValue<int>("Scraper:StartPage", 1);
         
+        // --- Phase 1: Rank Based ---
+        _logger.LogInformation("=== STARTING PHASE 1: RANK BASED SCRAPING ===");
+        _exportService.OutputFileName = "bgg_rank.json";
+        
         var idsBuffer = new List<int>();
 
         try
         {
-            await foreach (var id in _discoveryService.DiscoverIdsAsync(startPage, stoppingToken))
+            await foreach (var id in _discoveryService.DiscoverIdsByRankAsync(startPage, stoppingToken))
             {
                 idsBuffer.Add(id);
 
@@ -51,15 +55,47 @@ public class ScraperWorker : BackgroundService
             if (idsBuffer.Count > 0)
             {
                 await ProcessBatchAsync(idsBuffer, stoppingToken);
+                idsBuffer.Clear();
             }
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) { }
+        catch (Exception ex)
         {
-            _logger.LogInformation("Scraper stopped.");
+            _logger.LogError(ex, "Error in Phase 1");
+        }
+
+        if (stoppingToken.IsCancellationRequested) return;
+
+        // --- Phase 2: ID Sequence Based ---
+        _logger.LogInformation("=== STARTING PHASE 2: ID SEQUENCE SCRAPING ===");
+        _exportService.OutputFileName = "bgg_all_ids.json";
+
+        try
+        {
+            await foreach (var id in _discoveryService.DiscoverIdsBySequenceAsync(stoppingToken))
+            {
+                idsBuffer.Add(id);
+
+                if (idsBuffer.Count >= batchSize)
+                {
+                    await ProcessBatchAsync(idsBuffer, stoppingToken);
+                    idsBuffer.Clear();
+                }
+            }
+            
+            if (idsBuffer.Count > 0)
+            {
+                await ProcessBatchAsync(idsBuffer, stoppingToken);
+                idsBuffer.Clear();
+            }
+        }
+        catch (OperationCanceledException) 
+        {
+             _logger.LogInformation("Scraper stopped.");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Fatal error in scraper worker.");
+            _logger.LogError(ex, "Error in Phase 2");
         }
     }
 

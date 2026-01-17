@@ -10,18 +10,30 @@ public class BggDiscoveryService
     private const string BaseUrl = "https://boardgamegeek.com/browse/boardgame/page/";
     private static readonly Regex IdRegex = new(@"/boardgame/(\d+)/", RegexOptions.Compiled);
 
-    public BggDiscoveryService(HttpClient httpClient, ILogger<BggDiscoveryService> logger)
+    private readonly IConfiguration _config;
+
+    public BggDiscoveryService(HttpClient httpClient, ILogger<BggDiscoveryService> logger, IConfiguration config)
     {
         _httpClient = httpClient;
         _logger = logger;
+        _config = config;
     }
 
-    public async IAsyncEnumerable<int> DiscoverIdsAsync(int startPage = 1, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct = default)
+    public async IAsyncEnumerable<int> DiscoverIdsByRankAsync(int startPage = 1, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct = default)
     {
         int page = startPage;
-        
+        int maxPages = _config.GetValue<int>("Scraper:RankMode:MaxPages", 10); // Default 10 pages (~1000 items)
+
+        _logger.LogInformation("Phase 1 - Scraping top ranked games (MaxPages: {MaxPages})", maxPages);
+
         while (!ct.IsCancellationRequested)
         {
+            if (page > maxPages)
+            {
+                 _logger.LogInformation("Phase 1 - Reached max configured pages ({Max}). Moving to Phase 2.", maxPages);
+                 yield break;
+            }
+
             _logger.LogInformation("Scraping page {Page}", page);
             var url = $"{BaseUrl}{page}";
             
@@ -33,7 +45,6 @@ public class BggDiscoveryService
             catch (Exception ex)
             {
                 _logger.LogError("Error fetching page {Page}: {Message}", page, ex.Message);
-                // Pause and retry logic should technically be in Polly, but here we break loop to avoid infinite error spam if offline
                 await Task.Delay(5000, ct);
                 continue; 
             }
@@ -45,7 +56,12 @@ public class BggDiscoveryService
             
             if (links == null || links.Count == 0)
             {
-                _logger.LogWarning("No links found on page {Page}. Stopping.", page);
+                _logger.LogWarning("No links found on page {Page}. Stopping Phase 1.", page);
+                try 
+                {
+                    await System.IO.File.WriteAllTextAsync($"failed_page_{page}.html", html, ct);
+                }
+                catch { }
                 yield break;
             }
 
@@ -70,7 +86,7 @@ public class BggDiscoveryService
             var nextLink = doc.DocumentNode.SelectSingleNode("//a[@title='next page']");
             if (nextLink == null)
             {
-                _logger.LogInformation("No next page link found. Discovery complete.");
+                _logger.LogInformation("No next page link found. Discovery Phase 1 complete.");
                 yield break;
             }
 
@@ -78,4 +94,19 @@ public class BggDiscoveryService
             await Task.Delay(5000, ct); // Politeness delay
         }
     }
+
+    public async IAsyncEnumerable<int> DiscoverIdsBySequenceAsync([System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct = default)
+    {
+        int startId = _config.GetValue<int>("Scraper:IdSequence:StartId", 1);
+        int endId = _config.GetValue<int>("Scraper:IdSequence:EndId", 100000);
+
+        _logger.LogInformation("Phase 2 - Generating IDs from {StartId} to {EndId}", startId, endId);
+
+        for (int id = startId; id <= endId; id++)
+        {
+            if (ct.IsCancellationRequested) yield break;
+            yield return id;
+        }
+    }
+
 }
