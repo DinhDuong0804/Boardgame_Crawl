@@ -1,0 +1,9 @@
+Server: nginx
+Date: Fri, 16 Jan 2026 17:12:26 GMT
+Content-Type: text/xml; charset="UTF-8"
+Etag: W/"246377282228059c50be080de53f3b1f"
+Cache-Control: s-maxage=0, max-age=3600
+Access-Control-Allow-Origin: *
+Content-Encoding: gzip
+Via: 1.1 google
+Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000

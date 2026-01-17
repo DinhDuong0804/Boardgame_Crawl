@@ -1,0 +1,6 @@
+@BoardGameScraper.Api_HostAddress = http://localhost:5185
+
+GET {{BoardGameScraper.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

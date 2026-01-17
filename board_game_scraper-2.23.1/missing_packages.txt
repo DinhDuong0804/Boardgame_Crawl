@@ -1,0 +1,12 @@
+scrapy
+itemadapter
+pytility
+scrapy-extensions
+python-dotenv
+pyyaml
+jmespath
+boto
+awscli
+pillow
+pympler
+dedupe>=2.0.0
