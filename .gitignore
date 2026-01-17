@@ -1,0 +1,29 @@
+# User specific
+.env
+appsettings.Development.json
+.vscode/
+
+# .NET
+bin/
+obj/
+*.user
+*.pdb
+*.dll
+*.exe
+*.cache
+project.lock.json
+*.nuget.props
+*.nuget.targets
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.manifest
+.venv/
+venv/
+*.spec
+
+# OS generated
+.DS_Store
+Thumbs.db
