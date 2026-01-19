@@ -21,28 +21,19 @@ public class DataExportService
         await _lock.WaitAsync(ct);
         try
         {
-            var options = new JsonSerializerOptions { WriteIndented = true };
-            List<GameItem> existingData = new();
+            var options = new JsonSerializerOptions { WriteIndented = false }; // Single line per item
             
-            if (File.Exists(OutputFileName))
+            // Check if file exists to determine if we need a newline prefix (if implementation requires)
+            // But for simple AppendAllText, each WriteLine is safer.
+            
+            using var writer = new StreamWriter(OutputFileName, append: true);
+            foreach (var game in games)
             {
-                try 
-                {
-                    using var stream = File.OpenRead(OutputFileName);
-                    existingData = await JsonSerializer.DeserializeAsync<List<GameItem>>(stream, options, ct) ?? new();
-                }
-                catch
-                {
-                    _logger.LogWarning("Could not parse existing file, starting fresh/appending.");
-                }
+                var json = JsonSerializer.Serialize(game, options);
+                await writer.WriteLineAsync(json.AsMemory(), ct);
             }
-
-            existingData.AddRange(games);
-
-            using var writeStream = File.Create(OutputFileName);
-            await JsonSerializer.SerializeAsync(writeStream, existingData, options, ct);
             
-            _logger.LogInformation("Saved {Count} games to {File}. Total: {Total}", games.Count, OutputFileName, existingData.Count);
+            _logger.LogInformation("Appended {Count} games to {File}.", games.Count, OutputFileName);
         }
         catch (Exception ex)
         {

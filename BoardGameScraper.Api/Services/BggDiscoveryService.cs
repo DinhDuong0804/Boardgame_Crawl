@@ -95,9 +95,9 @@ public class BggDiscoveryService
         }
     }
 
-    public async IAsyncEnumerable<int> DiscoverIdsBySequenceAsync([System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct = default)
+    public async IAsyncEnumerable<int> DiscoverIdsBySequenceAsync(int? resumeId = null, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct = default)
     {
-        int startId = _config.GetValue<int>("Scraper:IdSequence:StartId", 1);
+        int startId = resumeId ?? _config.GetValue<int>("Scraper:IdSequence:StartId", 1);
         int endId = _config.GetValue<int>("Scraper:IdSequence:EndId", 100000);
 
         _logger.LogInformation("Phase 2 - Generating IDs from {StartId} to {EndId}", startId, endId);

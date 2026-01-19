@@ -13,6 +13,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddSingleton<BggDiscoveryService>();
 builder.Services.AddSingleton<BggApiClient>();
 builder.Services.AddSingleton<DataExportService>();
+builder.Services.AddSingleton<StateManager>();
 
 // Register Worker
 builder.Services.AddHostedService<ScraperWorker>();
