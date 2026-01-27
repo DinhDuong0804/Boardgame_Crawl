@@ -1,5 +1,7 @@
 using BoardGameScraper.Api;
+using BoardGameScraper.Api.Data;
 using BoardGameScraper.Api.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Http.Resilience;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,18 +11,51 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
 
-// Register Scraper Services
+// ============================================
+// DATABASE - PostgreSQL with Entity Framework
+// ============================================
+var connectionString = builder.Configuration.GetConnectionString("PostgreSQL")
+    ?? "Host=localhost;Port=5432;Database=boardgame_cafe;Username=boardgame;Password=BoardGame@2026";
+
+builder.Services.AddDbContext<BoardGameDbContext>(options =>
+    options.UseNpgsql(connectionString));
+
+// ============================================
+// RABBITMQ
+// ============================================
+builder.Services.AddSingleton<RabbitMQService>();
+
+// ============================================
+// APPLICATION SERVICES
+// ============================================
+builder.Services.AddScoped<GameService>();
+
+// Scraper Services
 builder.Services.AddSingleton<BggDiscoveryService>();
 builder.Services.AddSingleton<BggApiClient>();
 builder.Services.AddSingleton<DataExportService>();
 builder.Services.AddSingleton<StateManager>();
+builder.Services.AddSingleton<RulebookScraperService>();
+builder.Services.AddSingleton<WikidataEnrichmentService>();
+builder.Services.AddSingleton<TranslationService>();
 
-// Register Worker
-builder.Services.AddHostedService<ScraperWorker>();
+// ============================================
+// BACKGROUND WORKERS (Optional - can be disabled)
+// ============================================
+var enableBackgroundWorkers = builder.Configuration.GetValue<bool>("Scraper:EnableBackgroundWorkers", false);
+if (enableBackgroundWorkers)
+{
+    builder.Services.AddHostedService<ScraperWorker>();
+    builder.Services.AddHostedService<RulebookEnrichmentWorker>();
+    builder.Services.AddHostedService<TranslationWorker>();
+}
 
-// Configure HttpClient with Resilience (Polly)
-// BGG Rate Limit defense: Retry on 429/5xx, and standard timeouts
-builder.Services.AddHttpClient<BggDiscoveryService>((sp, client) => 
+// ============================================
+// HTTP CLIENTS with Resilience (Polly)
+// ============================================
+
+// BGG Discovery Service
+builder.Services.AddHttpClient<BggDiscoveryService>((sp, client) =>
 {
     var config = sp.GetRequiredService<IConfiguration>();
     var token = config["BggApi:AuthToken"];
@@ -34,13 +69,14 @@ builder.Services.AddHttpClient<BggDiscoveryService>((sp, client) =>
 })
 .AddStandardResilienceHandler();
 
-builder.Services.AddHttpClient<BggApiClient>((sp, client) => 
+// BGG API Client
+builder.Services.AddHttpClient<BggApiClient>((sp, client) =>
 {
     var config = sp.GetRequiredService<IConfiguration>();
     var token = config["BggApi:AuthToken"];
-    
+
     client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
-    
+
     if (!string.IsNullOrEmpty(token))
     {
         client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
@@ -48,9 +84,59 @@ builder.Services.AddHttpClient<BggApiClient>((sp, client) =>
 })
 .AddStandardResilienceHandler();
 
+// Rulebook Scraper
+builder.Services.AddHttpClient<RulebookScraperService>((sp, client) =>
+{
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+    client.Timeout = TimeSpan.FromSeconds(30);
+})
+.AddStandardResilienceHandler();
+
+// Wikidata SPARQL
+builder.Services.AddHttpClient<WikidataEnrichmentService>((sp, client) =>
+{
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("BoardGameScraper/1.0 (https://github.com/example; compatible)");
+    client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+    client.Timeout = TimeSpan.FromSeconds(60);
+})
+.AddStandardResilienceHandler();
+
+// Translation Service (external API)
+builder.Services.AddHttpClient<TranslationService>((sp, client) =>
+{
+    client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+    client.Timeout = TimeSpan.FromSeconds(120);
+})
+.AddStandardResilienceHandler();
+
+// ============================================
+// BUILD APP
+// ============================================
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// ============================================
+// DATABASE MIGRATION (Optional in Development)
+// ============================================
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<BoardGameDbContext>();
+
+    // Ensure database is created (use migrations in production)
+    try
+    {
+        await db.Database.EnsureCreatedAsync();
+        app.Logger.LogInformation("Database connection verified");
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogWarning(ex, "Database not available. Make sure PostgreSQL is running.");
+    }
+}
+
+// ============================================
+// CONFIGURE PIPELINE
+// ============================================
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -59,5 +145,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+// Health check endpoint
+app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
 
 app.Run();

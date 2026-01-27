@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database (synced with appsettings.json)
+  postgres:
+    image: postgres:16
+    container_name: boardgame_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "080423"
+      POSTGRES_DB: boardgame_cafe
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+    networks:
+      - boardgame_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d boardgame_cafe"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # RabbitMQ is already running in your Docker (container: rabbitmq)
+  # Host: localhost, Port: 5672, Management: 15672
+  # Username: admin, Password: admin123
+  
+  # Uncomment below if you need a new RabbitMQ instance:
+  # rabbitmq:
+  #   image: rabbitmq:3-management
+  #   container_name: boardgame_rabbitmq
+  #   environment:
+  #     RABBITMQ_DEFAULT_USER: admin
+  #     RABBITMQ_DEFAULT_PASS: admin123
+  #   ports:
+  #     - "5672:5672"
+  #     - "15672:15672"
+  #   restart: unless-stopped
+  #   networks:
+  #     - boardgame_network
+
+networks:
+  boardgame_network:
+    driver: bridge
+
+volumes:
+  postgres_data:

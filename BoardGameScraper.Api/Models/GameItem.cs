@@ -30,7 +30,7 @@ public class GameItem
 
     [JsonPropertyName("avg_rating")]
     public double? AvgRating { get; set; }
-    
+
     [JsonPropertyName("rank")]
     public int? Rank { get; set; }
 
@@ -45,7 +45,7 @@ public class GameItem
 
     [JsonPropertyName("publisher")]
     public List<string> Publishers { get; set; } = new();
-        
+
     [JsonPropertyName("category")]
     public List<string> Categories { get; set; } = new();
 
@@ -54,4 +54,35 @@ public class GameItem
 
     [JsonPropertyName("scraped_at")]
     public DateTime ScrapedAt { get; set; } = DateTime.UtcNow;
+
+    [JsonPropertyName("rulebook_urls")]
+    public List<RulebookInfo> RulebookUrls { get; set; } = new();
+
+    // Vietnamese translations
+    [JsonPropertyName("name_vi")]
+    public string? NameVi { get; set; }
+
+    [JsonPropertyName("description_vi")]
+    public string? DescriptionVi { get; set; }
+
+    [JsonPropertyName("category_vi")]
+    public List<string>? CategoryVi { get; set; }
+
+    [JsonPropertyName("mechanic_vi")]
+    public List<string>? MechanicVi { get; set; }
+}
+
+public class RulebookInfo
+{
+    [JsonPropertyName("url")]
+    public string Url { get; set; } = string.Empty;
+
+    [JsonPropertyName("title")]
+    public string Title { get; set; } = string.Empty;
+
+    [JsonPropertyName("language")]
+    public string? Language { get; set; }
+
+    [JsonPropertyName("file_type")]
+    public string FileType { get; set; } = "pdf";
 }
