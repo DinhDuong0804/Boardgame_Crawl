@@ -1,26 +1,29 @@
-# Python
+# --- Python ---
 __pycache__/
 *.pyc
-*.pyo
-*$py.class
 venv/
 .venv/
 env/
 
-# Environment Variables (Security)
+# --- C# / .NET ---
+bin/
+obj/
+.vs/
+*.user
+*.pdb
+
+# --- Environment & Security (Keep local, do not commit) ---
 .env
 .env.local
+appsettings.Development.json
 
-# Gemini / Browser Automation specific
-translation-service/gemini_profile/
+# --- Tools specific (Gemini) ---
 gemini_profile/
+translation-service/gemini_profile/
 translation-service/downloads/
 downloads/
 
-# Logs
+# --- Logs & OS ---
 *.log
-npm-debug.log*
-
-# OS specific
 .DS_Store
 Thumbs.db
