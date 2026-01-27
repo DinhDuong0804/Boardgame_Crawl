@@ -100,48 +100,51 @@ class GeminiTranslator(BaseTranslator):
             
         import google.generativeai as genai
         genai.configure(api_key=self.api_key)
-        # Use gemini-1.5-flash
         generation_config = genai.types.GenerationConfig(
             temperature=0.1,
             max_output_tokens=8192,
         )
-        self.model = genai.GenerativeModel('gemini-1.5-flash', generation_config=generation_config)
-        logger.info("Gemini (flash) model configured with temp=0.1")
+        self.model = genai.GenerativeModel('models/gemini-2.0-flash', generation_config=generation_config)
+        logger.info("Gemini 2.0 Flash model configured (State of the art)")
 
     def translate(self, text: str) -> str:
         if not text or not text.strip():
             return ""
 
-        # Split text into manageable chunks
-        chunks = self._split_text(text, 5000)
+        chunks = self._split_text(text, 5000) # Chia nhỏ hơn để dễ dịch và tránh lỗi
         translated_chunks = []
 
         prompt_template = """
-Target Language: Vietnamese
-Task: Translate the text below. Keep specific board game terms (e.g. Round, Token) in English.
+BẠN LÀ MỘT DỊCH GIẢ BOARD GAME. DỊCH VĂN BẢN SAU SANG TIẾNG VIỆT.
+GIỮ NGUYÊN THUẬT NGỮ: Round, Era, Token, Link, Brewery, Coal Mine, Iron Works, Cotton Mill, Manufacturer, Pottery, Build, Network, Develop.
 
-Text:
+VĂN BẢN (TIẾNG ANH):
 {text}
 
-Translation:
+BẢN DỊCH (TIẾNG VIỆT):
 """
         
         for i, chunk in enumerate(chunks):
             try:
-                # Simple rate limiting handling
-                time.sleep(2.0)  # Sleep 2s to be safe
+                if i > 0:
+                    logger.info("Waiting 10s to avoid rate limits...")
+                    time.sleep(10)
+                
+                logger.info(f"Sending chunk {i+1}/{len(chunks)} to Gemini...")
                 response = self.model.generate_content(prompt_template.format(text=chunk))
                 
                 if response.text and response.text.strip():
-                   translated_chunks.append(response.text.strip())
+                   result = response.text.strip()
+                   logger.info(f"Received {len(result)} characters.")
+                   logger.info(f"Sample: {result[:50]}...")
+                   translated_chunks.append(result)
                 else:
-                   logger.warning(f"Empty response from Gemini for chunk {i}. Fallback to original.")
-                   logger.warning(f"Feedback: {response.prompt_feedback}")
-                   translated_chunks.append(chunk)
+                   logger.warning(f"Empty response for chunk {i}.")
+                   translated_chunks.append(f"\n[LỖI: Gemini trả về nội dung trống cho đoạn {i+1}]\n")
 
             except Exception as e:
-                logger.error(f"Gemini translation error for chunk {i}: {e}")
-                translated_chunks.append(chunk) # Fallback to original
+                logger.error(f"Gemini API error: {e}")
+                translated_chunks.append(f"\n[LỖI DỊCH THUẬT: {str(e)}]\n")
         
         return "\n\n".join(translated_chunks)
 

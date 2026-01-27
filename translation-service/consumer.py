@@ -34,7 +34,7 @@ class TranslationConsumer:
         self.connection = None
         self.channel = None
         self.translator = get_translator()
-        self.rulebook_processor = RulebookProcessor()
+        self.rulebook_processor = RulebookProcessor(self.translator)
         self.db = get_database()
         self.should_stop = False
         

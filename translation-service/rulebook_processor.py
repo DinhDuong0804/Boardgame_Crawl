@@ -24,8 +24,11 @@ class RulebookProcessor:
     4. Extract -> Translate -> Markdown
     """
     
-    def __init__(self):
-        self.translator = get_translator()
+    def __init__(self, translator=None):
+        if translator:
+            self.translator = translator
+        else:
+            self.translator = get_translator()
         # Browser instance is created per-task or reused? 
         # For simplicity and stability, we'll create a fresh context per process call
         # or manage a persistent browser. Let's do persistent for efficiency.
@@ -141,6 +144,7 @@ class RulebookProcessor:
         
         file_content = None
         file_type = 'unknown'
+        local_path = None
         
         # Check database for local file
         if rulebook_id:
@@ -194,7 +198,7 @@ class RulebookProcessor:
                     except Exception as save_err:
                         logger.warning(f"Could not save local file: {save_err}")
                 
-            # Step 3: Extract text
+            # Step 3: Extract text from file
             english_text = self._extract_text(file_content, file_type)
             if not english_text or len(english_text.strip()) < 100:
                 logger.warning(f"Insufficient text extracted from {rulebook_title}")

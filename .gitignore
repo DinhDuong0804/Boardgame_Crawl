@@ -1,29 +1,26 @@
-# User specific
-.env
-appsettings.Development.json
-.vscode/
-
-# .NET
-bin/
-obj/
-*.user
-*.pdb
-*.dll
-*.exe
-*.cache
-project.lock.json
-*.nuget.props
-*.nuget.targets
-
 # Python
 __pycache__/
-*.py[cod]
+*.pyc
+*.pyo
 *$py.class
-*.manifest
-.venv/
 venv/
-*.spec
+.venv/
+env/
 
-# OS generated
+# Environment Variables (Security)
+.env
+.env.local
+
+# Gemini / Browser Automation specific
+translation-service/gemini_profile/
+gemini_profile/
+translation-service/downloads/
+downloads/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS specific
 .DS_Store
 Thumbs.db
