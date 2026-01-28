@@ -130,6 +130,10 @@ class BrowserGeminiTranslator(BaseTranslator):
             response = self.page.evaluate("() => document.querySelector('message-content:last-of-type')?.innerText || ''")
             
         logger.info(f"Captured {len(response)} characters.")
+        
+        # CLEANUP: Thay thế các ký tự xuống dòng lạ (LS, PS) bằng \n chuẩn để VS Code không báo lỗi
+        response = response.replace('\u2028', '\n').replace('\u2029', '\n').replace('\r\n', '\n')
+        
         return response
 
     def __del__(self):
