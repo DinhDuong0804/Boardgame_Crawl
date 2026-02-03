@@ -6,6 +6,7 @@ import logging
 import re
 import time
 from pathlib import Path
+from typing import Optional, Dict, Tuple
 from urllib.parse import urlparse, urljoin
 import config
 from translator import get_translator
@@ -233,7 +234,7 @@ class RulebookProcessor:
             logger.error(f"Error processing rulebook {rulebook_title}: {e}")
             return None
             
-    def _browser_download(self, url: str) -> tuple[Optional[bytes], str]:
+    def _browser_download(self, url: str) -> Tuple[Optional[bytes], str]:
         """Download file using Playwright's expect_download"""
         page = self.context.new_page()
         try:

@@ -90,6 +90,7 @@ public class RulebookScraperService
                     var title = file.TryGetProperty("title", out var t) ? t.GetString() ?? "" : "";
                     var filename = file.TryGetProperty("filename", out var fn) ? fn.GetString() ?? "" : "";
                     var href = file.TryGetProperty("href", out var h) ? h.GetString() ?? "" : "";
+                    var fileid = file.TryGetProperty("fileid", out var fid) ? fid.GetString() ?? "" : "";
                     var filepageid = file.TryGetProperty("filepageid", out var fpid) ? fpid.GetString() ?? "" : "";
                     var categoryid = file.TryGetProperty("categoryid", out var cid) ? cid.GetString() ?? "" : "";
                     var language = file.TryGetProperty("language", out var lang) ? lang.GetString() : null;
@@ -136,7 +137,8 @@ public class RulebookScraperService
                             Url = fileUrl,
                             Title = !string.IsNullOrEmpty(title) ? title : filename,
                             Language = "English", // We only keep English now
-                            FileType = GetFileType(filename)
+                            FileType = GetFileType(filename),
+                            BggFileId = !string.IsNullOrEmpty(fileid) ? fileid : filepageid
                         });
                     }
                 }

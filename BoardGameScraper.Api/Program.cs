@@ -39,6 +39,25 @@ builder.Services.AddSingleton<RulebookScraperService>();
 builder.Services.AddSingleton<WikidataEnrichmentService>();
 builder.Services.AddSingleton<TranslationService>();
 
+// New Translation Services (C# based)
+builder.Services.AddScoped<PdfService>();
+builder.Services.AddScoped<GeminiTranslatorService>();
+builder.Services.AddScoped<RulebookTranslationService>();
+builder.Services.AddSingleton<BggPlaywrightService>();
+
+// BGG Download Service with HttpClient and Cookies
+builder.Services.AddHttpClient<BggPdfDownloadService>((sp, client) =>
+{
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+    client.Timeout = TimeSpan.FromMinutes(5); // PDFs can be large
+})
+.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+{
+    UseCookies = true,
+    CookieContainer = new System.Net.CookieContainer(),
+    AllowAutoRedirect = true
+});
+
 // ============================================
 // BACKGROUND WORKERS (Optional - can be disabled)
 // ============================================
@@ -142,11 +161,25 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+// Enable CORS for frontend
+app.UseCors(policy => policy
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader());
+
 app.UseHttpsRedirection();
+
+// Serve static files from wwwroot (Admin Dashboard)
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.UseAuthorization();
 app.MapControllers();
 
 // Health check endpoint
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
+
+// Fallback to index.html for SPA routing
+app.MapFallbackToFile("index.html");
 
 app.Run();

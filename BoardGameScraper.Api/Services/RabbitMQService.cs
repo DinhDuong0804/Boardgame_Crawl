@@ -46,11 +46,11 @@ public class RabbitMQService : IDisposable
 
             var factory = new ConnectionFactory
             {
-                HostName = _config["RabbitMQ:Host"] ?? "localhost",
-                Port = _config.GetValue<int>("RabbitMQ:Port", 5672),
-                UserName = _config["RabbitMQ:Username"] ?? "guest",
-                Password = _config["RabbitMQ:Password"] ?? "guest",
-                VirtualHost = _config["RabbitMQ:VirtualHost"] ?? "/"
+                HostName = _config["RabbitMQSettings:Host"] ?? "localhost",
+                Port = _config.GetValue<int>("RabbitMQSettings:Port", 5672),
+                UserName = _config["RabbitMQSettings:Username"] ?? "guest",
+                Password = _config["RabbitMQSettings:Password"] ?? "guest",
+                VirtualHost = _config["RabbitMQSettings:VirtualHost"] ?? "/"
             };
 
             _logger.LogInformation("Connecting to RabbitMQ at {Host}:{Port}", factory.HostName, factory.Port);
@@ -179,11 +179,11 @@ public class TranslationCompleted
     public bool Success { get; set; }
     public string? NameVi { get; set; }
     public string? DescriptionVi { get; set; }
-    public List<RulebookTranslationResult> Rulebooks { get; set; } = new();
+    public List<RabbitMQRulebookTranslationResult> Rulebooks { get; set; } = new();
     public string? ErrorMessage { get; set; }
 }
 
-public class RulebookTranslationResult
+public class RabbitMQRulebookTranslationResult
 {
     public int RulebookId { get; set; }
     public bool Success { get; set; }

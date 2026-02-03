@@ -85,4 +85,7 @@ public class RulebookInfo
 
     [JsonPropertyName("file_type")]
     public string FileType { get; set; } = "pdf";
+
+    [JsonPropertyName("bgg_file_id")]
+    public string? BggFileId { get; set; }
 }

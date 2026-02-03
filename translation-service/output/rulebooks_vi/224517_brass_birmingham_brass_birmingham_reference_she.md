@@ -296,7 +296,7 @@ building location is connected to the
 If consuming removes all cubes from a tile, 
 owner ﬂips the tile and immediately 
 Place the tile. 
-If the built industry is a Coal Mine,  
+If the built industry is a Coal Mine, 
 Iron Works, or Brewery, place that industry’s 
 produced coal cubes, iron cubes, or beer 
 barrels on top of the tile. 
@@ -325,7 +325,7 @@ LOAN action (5 of 6)
 Acquire capital to fund BUILD and NETWORK 
 actions; collect £30 from the bank. 
 Your current income level is greater than or 
-equal to -£7 (income cannot drop below  
+equal to -£7 (income cannot drop below 
 -£10). 
 Reduce your income level (the inner track) by 
 three to the highest progress mark for the 
@@ -374,7 +374,7 @@ either an Iron Works or the Iron Market.
 Consume an iron cube from an Iron Works. 
 Otherwise, purchase an iron cube to 
 consume from the Iron Market. 
-If all iron cubes were removed from an  
+If all iron cubes were removed from an 
 Iron Works, ﬂip the tile. Owner immediately 
 Remove the lowest-level tile for one industry. 
 (Removed tile may not be a Pottery tile 
@@ -437,7 +437,7 @@ http://augustcouncil.com/brass/
 • Manufacturer 
 • Pottery
 When an industry is built (with the BUILD action) it 
-produces goods. The goods produced by  
+produces goods. The goods produced by 
 Coal Mine, Iron Works, and Brewery industries are 
 represented by physical tokens (Coal: black cubes; 
 Iron: orange cubes; Beer: barrels). When one of these 
@@ -445,7 +445,7 @@ industries is built, tokens are placed on top of them
 representing the goods the industry produces. These 
 goods are consumed (removed) through actions you 
 and the other players take. When all of the physical 
-tokens are consumed (removed) from a Coal Mine,  
+tokens are consumed (removed) from a Coal Mine, 
 Iron Works, or Brewery, the industry has matured 
 and the tile is ﬂipped over providing an immediate 
 income beneﬁt and end-of-era victory points. 

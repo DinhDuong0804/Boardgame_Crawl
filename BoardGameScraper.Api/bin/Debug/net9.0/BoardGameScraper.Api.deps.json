@@ -13,10 +13,13 @@
           "Microsoft.EntityFrameworkCore": "9.0.1",
           "Microsoft.EntityFrameworkCore.Design": "9.0.1",
           "Microsoft.Extensions.Http.Resilience": "10.2.0",
+          "Microsoft.Playwright": "1.58.0",
+          "Mscc.GenerativeAI": "1.9.0",
           "Newtonsoft.Json": "13.0.3",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "9.0.4",
           "RabbitMQ.Client": "7.1.2",
-          "System.ServiceModel.Syndication": "10.0.2"
+          "System.ServiceModel.Syndication": "10.0.2",
+          "itext7": "9.0.0"
         },
         "runtime": {
           "BoardGameScraper.Api.dll": {}
@@ -36,6 +39,77 @@
             "assemblyVersion": "2.14.0.0",
             "fileVersion": "2.14.1.48190"
           }
+        }
+      },
+      "itext/9.0.0": {
+        "dependencies": {
+          "Microsoft.DotNet.PlatformAbstractions": "1.1.0",
+          "Microsoft.Extensions.DependencyModel": "9.0.1",
+          "Microsoft.Extensions.Logging": "9.0.12",
+          "itext.commons": "9.0.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/itext.barcodes.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.0.0"
+          },
+          "lib/netstandard2.0/itext.bouncy-castle-connector.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.0.0"
+          },
+          "lib/netstandard2.0/itext.forms.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.0.0"
+          },
+          "lib/netstandard2.0/itext.io.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.0.0"
+          },
+          "lib/netstandard2.0/itext.kernel.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.0.0"
+          },
+          "lib/netstandard2.0/itext.layout.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.0.0"
+          },
+          "lib/netstandard2.0/itext.pdfa.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.0.0"
+          },
+          "lib/netstandard2.0/itext.pdfua.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.0.0"
+          },
+          "lib/netstandard2.0/itext.sign.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.0.0"
+          },
+          "lib/netstandard2.0/itext.styledxmlparser.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.0.0"
+          },
+          "lib/netstandard2.0/itext.svg.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.0.0"
+          }
+        }
+      },
+      "itext.commons/9.0.0": {
+        "dependencies": {
+          "Microsoft.Extensions.Logging": "9.0.12",
+          "Newtonsoft.Json": "13.0.3"
+        },
+        "runtime": {
+          "lib/netstandard2.0/itext.commons.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.0.0"
+          }
+        }
+      },
+      "itext7/9.0.0": {
+        "dependencies": {
+          "itext": "9.0.0"
         }
       },
       "Microsoft.AspNetCore.OpenApi/9.0.11": {
@@ -330,6 +404,14 @@
           },
           "lib/net7.0/zh-Hant/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll": {
             "locale": "zh-Hant"
+          }
+        }
+      },
+      "Microsoft.DotNet.PlatformAbstractions/1.1.0": {
+        "runtime": {
+          "lib/netstandard1.3/Microsoft.DotNet.PlatformAbstractions.dll": {
+            "assemblyVersion": "1.1.0.0",
+            "fileVersion": "1.1.0.0"
           }
         }
       },
@@ -753,6 +835,17 @@
           }
         }
       },
+      "Microsoft.Playwright/1.58.0": {
+        "dependencies": {
+          "Microsoft.Bcl.AsyncInterfaces": "7.0.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Playwright.dll": {
+            "assemblyVersion": "1.58.0.0",
+            "fileVersion": "1.58.0.0"
+          }
+        }
+      },
       "Mono.TextTemplating/3.0.0": {
         "dependencies": {
           "System.CodeDom": "6.0.0"
@@ -761,6 +854,17 @@
           "lib/net6.0/Mono.TextTemplating.dll": {
             "assemblyVersion": "3.0.0.0",
             "fileVersion": "3.0.0.1"
+          }
+        }
+      },
+      "Mscc.GenerativeAI/1.9.0": {
+        "dependencies": {
+          "Microsoft.Extensions.Logging": "9.0.12"
+        },
+        "runtime": {
+          "lib/net9.0/Mscc.GenerativeAI.dll": {
+            "assemblyVersion": "1.9.0.0",
+            "fileVersion": "1.9.0.0"
           }
         }
       },
@@ -934,6 +1038,27 @@
       "path": "humanizer.core/2.14.1",
       "hashPath": "humanizer.core.2.14.1.nupkg.sha512"
     },
+    "itext/9.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Y2nDUrXDO7eZ+dI2NZ10apW818OcgGklMWpLrVZ/P16rwSxpVyzjWZQjCgZVj8liSVhVDHy6eVJOrZah5KNhhQ==",
+      "path": "itext/9.0.0",
+      "hashPath": "itext.9.0.0.nupkg.sha512"
+    },
+    "itext.commons/9.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-mfQuZz4beW2GOHMrtGay5iowg6WINBkHMm7hj38el3eDvWY3yLVZGrVxdWVRhEXJIdsXsBa3lPywxspsqi3rxg==",
+      "path": "itext.commons/9.0.0",
+      "hashPath": "itext.commons.9.0.0.nupkg.sha512"
+    },
+    "itext7/9.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-WcRaL2xYhRWJrNXHlfWi9Cr/YApvFtDSEMvJlnbbSEUyYzYcwk52QJL/IAiP4T/O5U+rkzn6dIIwbeITUzsBLA==",
+      "path": "itext7/9.0.0",
+      "hashPath": "itext7.9.0.0.nupkg.sha512"
+    },
     "Microsoft.AspNetCore.OpenApi/9.0.11": {
       "type": "package",
       "serviceable": true,
@@ -989,6 +1114,13 @@
       "sha512": "sha512-IEYreI82QZKklp54yPHxZNG9EKSK6nHEkeuf+0Asie9llgS1gp0V1hw7ODG+QyoB7MuAnNQHmeV1Per/ECpv6A==",
       "path": "microsoft.codeanalysis.workspaces.msbuild/4.8.0",
       "hashPath": "microsoft.codeanalysis.workspaces.msbuild.4.8.0.nupkg.sha512"
+    },
+    "Microsoft.DotNet.PlatformAbstractions/1.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Bl6KYfbFSIW3QIRHAp931iR5h01qHjKghdpAtncwbzNUs0+IUZ+XfwkIU0sQsR33ufGvi3u4dZMIYYFysjpHAA==",
+      "path": "microsoft.dotnet.platformabstractions/1.1.0",
+      "hashPath": "microsoft.dotnet.platformabstractions.1.1.0.nupkg.sha512"
     },
     "Microsoft.EntityFrameworkCore/9.0.1": {
       "type": "package",
@@ -1228,12 +1360,26 @@
       "path": "microsoft.openapi/1.6.17",
       "hashPath": "microsoft.openapi.1.6.17.nupkg.sha512"
     },
+    "Microsoft.Playwright/1.58.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-LYLB00NUTzdY3NEN+fOQcxNuVALoGJMMWZYQINGBs4MfsKcTvr6WKoAmSsT5D4pPOOnN8uAyushEzoQ8qUEb0w==",
+      "path": "microsoft.playwright/1.58.0",
+      "hashPath": "microsoft.playwright.1.58.0.nupkg.sha512"
+    },
     "Mono.TextTemplating/3.0.0": {
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-YqueG52R/Xej4VVbKuRIodjiAhV0HR/XVbLbNrJhCZnzjnSjgMJ/dCdV0akQQxavX6hp/LC6rqLGLcXeQYU7XA==",
       "path": "mono.texttemplating/3.0.0",
       "hashPath": "mono.texttemplating.3.0.0.nupkg.sha512"
+    },
+    "Mscc.GenerativeAI/1.9.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-3yjYjh0pnshxuGPuIidC2OZFKtRFIwhrrScfGcgXRxuUHcShmMiZFXxEQe0zySFa//XFC9X20mr5xchPeaHQow==",
+      "path": "mscc.generativeai/1.9.0",
+      "hashPath": "mscc.generativeai.1.9.0.nupkg.sha512"
     },
     "Newtonsoft.Json/13.0.3": {
       "type": "package",

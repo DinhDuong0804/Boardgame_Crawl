@@ -1,11 +1,10 @@
 """
 Translation Engine
 Supports multiple providers:
-1. Local: Helsinki-NLP/opus-mt-en-vi (Offline, Basic quality)
+1. Local: Helsinki-NLP/opus-mt-en-vi (Offline, Basic quality) - Requires torch
 2. Gemini: Google Generative AI (Online, High quality, Free tier available)
 """
 import logging
-import torch
 from abc import ABC, abstractmethod
 import os
 import time
@@ -34,8 +33,11 @@ class LocalTranslator(BaseTranslator):
     def load(self):
         if self.model:
             return
-            
+        
+        # Lazy import torch and transformers only when using local model
+        import torch
         from transformers import MarianMTModel, MarianTokenizer
+        self.torch = torch  # Store reference for translate()
         
         logger.info(f"Loading local model: {config.MODEL_NAME}")
         self.tokenizer = MarianTokenizer.from_pretrained(config.MODEL_NAME)
@@ -57,7 +59,7 @@ class LocalTranslator(BaseTranslator):
             try:
                 inputs = self.tokenizer(chunk, return_tensors="pt", padding=True, truncation=True, max_length=512).to(self.device)
                 
-                with torch.no_grad():
+                with self.torch.no_grad():
                     translated = self.model.generate(**inputs)
                     
                 decoded = self.tokenizer.batch_decode(translated, skip_special_tokens=True)[0]
@@ -100,12 +102,10 @@ class GeminiTranslator(BaseTranslator):
             
         import google.generativeai as genai
         genai.configure(api_key=self.api_key)
-        generation_config = genai.types.GenerationConfig(
-            temperature=0.1,
-            max_output_tokens=8192,
-        )
-        self.model = genai.GenerativeModel('models/gemini-2.0-flash', generation_config=generation_config)
-        logger.info("Gemini 2.0 Flash model configured (State of the art)")
+        
+        # Simple configuration without GenerationConfig (for compatibility)
+        self.model = genai.GenerativeModel('gemini-pro')
+        logger.info("Gemini Pro model configured")
 
     def translate(self, text: str) -> str:
         if not text or not text.strip():
