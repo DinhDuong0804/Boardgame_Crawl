@@ -51,7 +51,7 @@ public class BggPlaywrightService
         try
         {
             _logger.LogInformation($"Checking BGG login status...");
-            await page.GotoAsync("https://boardgamegeek.com/login", new PageGotoOptions { WaitUntil = WaitUntilState.Load, Timeout = 60000 });
+            await page.GotoAsync("https://boardgamegeek.com/login", new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded, Timeout = 60000 });
 
             // Kiểm tra nhiều dấu hiệu đã đăng nhập (Sign Out, hoặc có menu user)
             var isLoggedIn = await page.Locator("text=Sign Out").IsVisibleAsync() ||
@@ -133,8 +133,12 @@ public class BggPlaywrightService
             // Navigate to the file page first (important for session/referer)
             _logger.LogInformation($"Navigating to file page: {url}");
             await page.GotoAsync(url, new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded, Timeout = 60000 });
+            
+            // Only wait here to ensure the download button and its event listeners are fully bound
+            _logger.LogInformation("Waiting 2 seconds for download button to stabilize...");
+            await Task.Delay(2000);
 
-            _logger.LogInformation($"Page DOM loaded. Title: {await page.TitleAsync()}");
+            _logger.LogInformation($"Page ready. Title: {await page.TitleAsync()}");
 
             // Define download selectors in order of preference
             var downloadSelectors = new[] {

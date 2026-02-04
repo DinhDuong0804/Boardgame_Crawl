@@ -154,8 +154,6 @@ D:\Downloads\board_game_scraper-2.23.1\BoardGameScraper.Api\obj\Debug\net9.0\Boa
 D:\Downloads\board_game_scraper-2.23.1\BoardGameScraper.Api\obj\Debug\net9.0\ref\BoardGameScraper.Api.dll
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\appsettings.Development.json
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\appsettings.json
-D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\rulebook_state.json
-D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\scraper_state.json
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\BoardGameScraper.Api.staticwebassets.runtime.json
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\BoardGameScraper.Api.staticwebassets.endpoints.json
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\BoardGameScraper.Api.exe
@@ -215,7 +213,6 @@ D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\Npgsq
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\Polly.Core.dll
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\Polly.Extensions.dll
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\Polly.RateLimiting.dll
-D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\RabbitMQ.Client.dll
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\System.CodeDom.dll
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\System.Composition.AttributedModel.dll
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\System.Composition.Convention.dll
@@ -312,7 +309,6 @@ D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\obj\Debug\net9.0\refin
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\obj\Debug\net9.0\BoardGameScraper.Api.pdb
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\obj\Debug\net9.0\BoardGameScraper.Api.genruntimeconfig.cache
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\obj\Debug\net9.0\ref\BoardGameScraper.Api.dll
-D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\obj\Debug\net9.0\compressed\oi7dzrhmhz-{0}-pj01u6didn-pj01u6didn.gz
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\itext.barcodes.dll
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\itext.bouncy-castle-connector.dll
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\itext.forms.dll
@@ -326,9 +322,6 @@ D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\itext
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\itext.svg.dll
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\itext.commons.dll
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\Microsoft.DotNet.PlatformAbstractions.dll
-D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\Mscc.GenerativeAI.dll
-D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\obj\Debug\net9.0\compressed\b2k93tru66-{0}-vi6c52edfp-vi6c52edfp.gz
-D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\obj\Debug\net9.0\compressed\vqp91n0vvs-{0}-jw1p5w58hx-jw1p5w58hx.gz
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\.playwright\node\win32_x64\node.exe
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\.playwright\node\LICENSE
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\.playwright\package\api.json
@@ -698,8 +691,6 @@ D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\.play
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\.playwright\package\types\types.d.ts
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\playwright.ps1
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\bin\Debug\net9.0\Microsoft.Playwright.dll
-D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\obj\Debug\net9.0\compressed\ahuhj1k5p7-{0}-61ugc0gxqk-61ugc0gxqk.gz
-D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\obj\Debug\net9.0\compressed\2lqrlh1nxj-{0}-jqkfrg86cv-jqkfrg86cv.gz
 D:\Downloads\board_game_scraper-2.23.1\BoardGameScraper.Api\bin\Debug\net9.0\.playwright\node\win32_x64\node.exe
 D:\Downloads\board_game_scraper-2.23.1\BoardGameScraper.Api\bin\Debug\net9.0\.playwright\node\LICENSE
 D:\Downloads\board_game_scraper-2.23.1\BoardGameScraper.Api\bin\Debug\net9.0\.playwright\package\api.json
@@ -1086,3 +1077,6 @@ D:\Downloads\board_game_scraper-2.23.1\BoardGameScraper.Api\bin\Debug\net9.0\Mic
 D:\Downloads\board_game_scraper-2.23.1\BoardGameScraper.Api\obj\Debug\net9.0\compressed\b2k93tru66-{0}-dta03l2e5n-dta03l2e5n.gz
 D:\Downloads\board_game_scraper-2.23.1\BoardGameScraper.Api\obj\Debug\net9.0\compressed\ahuhj1k5p7-{0}-xhvq13xggl-xhvq13xggl.gz
 D:\Downloads\board_game_scraper-2.23.1\BoardGameScraper.Api\obj\Debug\net9.0\compressed\oi7dzrhmhz-{0}-lt02yqca5v-lt02yqca5v.gz
+D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\obj\Debug\net9.0\compressed\b2k93tru66-{0}-dta03l2e5n-dta03l2e5n.gz
+D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\obj\Debug\net9.0\compressed\ahuhj1k5p7-{0}-xhvq13xggl-xhvq13xggl.gz
+D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\obj\Debug\net9.0\compressed\oi7dzrhmhz-{0}-lt02yqca5v-lt02yqca5v.gz
