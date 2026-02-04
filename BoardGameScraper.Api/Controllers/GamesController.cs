@@ -9,16 +9,13 @@ namespace BoardGameScraper.Api.Controllers;
 public class GamesController : ControllerBase
 {
     private readonly GameService _gameService;
-    private readonly RabbitMQService _rabbitMQ;
     private readonly ILogger<GamesController> _logger;
 
     public GamesController(
         GameService gameService,
-        RabbitMQService rabbitMQ,
         ILogger<GamesController> logger)
     {
         _gameService = gameService;
-        _rabbitMQ = rabbitMQ;
         _logger = logger;
     }
 
@@ -26,7 +23,7 @@ public class GamesController : ControllerBase
     /// Get list of games with optional filtering
     /// </summary>
     [HttpGet]
-    public async Task<ActionResult<List<GameDto>>> GetGames(
+    public async Task<ActionResult<object>> GetGames(
         [FromQuery] string? status = null,
         [FromQuery] int? minPlayers = null,
         [FromQuery] int? maxPlayers = null,
@@ -35,10 +32,16 @@ public class GamesController : ControllerBase
         [FromQuery] int take = 50,
         CancellationToken ct = default)
     {
-        var games = await _gameService.GetGamesAsync(
+        var (games, totalCount) = await _gameService.GetGamesWithCountAsync(
             status, minPlayers, maxPlayers, maxPlaytime, skip, take, ct);
 
-        return Ok(games.Select(g => MapToDto(g)).ToList());
+        return Ok(new
+        {
+            games = games.Select(g => MapToDto(g)).ToList(),
+            totalCount = totalCount,
+            skip = skip,
+            take = take
+        });
     }
 
     /// <summary>
@@ -94,60 +97,6 @@ public class GamesController : ControllerBase
     }
 
     /// <summary>
-    /// Request translation for a game
-    /// </summary>
-    [HttpPost("{id}/translate")]
-    public async Task<IActionResult> RequestTranslation(
-        int id,
-        [FromQuery] bool includeRulebooks = false,
-        CancellationToken ct = default)
-    {
-        var game = await _gameService.GetGameByIdAsync(id, ct);
-        if (game == null)
-            return NotFound();
-
-        // Update status
-        await _gameService.UpdateGameStatusAsync(id, "pending_translation", ct);
-
-        // Build translation request
-        var request = new TranslationRequest
-        {
-            GameId = game.Id,
-            BggId = game.BggId,
-            GameName = game.Name,
-            Description = game.Description,
-            TranslateInfo = true,
-            TranslateRulebooks = includeRulebooks
-        };
-
-        if (includeRulebooks && game.Rulebooks.Any())
-        {
-            request.Rulebooks = game.Rulebooks
-                .Where(r => r.Status == "pending" || r.Status == "downloaded")
-                .Select(r => new RulebookToTranslate
-                {
-                    RulebookId = r.Id,
-                    Title = r.Title,
-                    Url = r.OriginalUrl,
-                    LocalFilePath = r.LocalFilePath
-                })
-                .ToList();
-        }
-
-        // Send to RabbitMQ
-        await _rabbitMQ.RequestTranslationAsync(request);
-
-        _logger.LogInformation("Translation requested for game {Id}: {Name}", id, game.Name);
-
-        return Accepted(new
-        {
-            message = "Translation request sent",
-            gameId = id,
-            includeRulebooks
-        });
-    }
-
-    /// <summary>
     /// Update inventory for a game
     /// </summary>
     [HttpPost("{id}/inventory")]
@@ -195,10 +144,8 @@ public class GamesController : ControllerBase
             Id = game.Id,
             BggId = game.BggId,
             Name = game.Name,
-            NameVi = game.Translation?.NameVi,
             YearPublished = game.YearPublished,
             Description = game.Description,
-            DescriptionVi = game.Translation?.DescriptionVi,
             MinPlayers = game.MinPlayers,
             MaxPlayers = game.MaxPlayers,
             MinPlaytime = game.MinPlaytime,
@@ -208,8 +155,6 @@ public class GamesController : ControllerBase
             ImageUrl = game.ImageUrl,
             ThumbnailUrl = game.ThumbnailUrl,
             Status = game.Status,
-            HasTranslation = game.Translation?.Status == "completed",
-            TranslationStatus = game.Translation?.Status,
             Quantity = game.Inventory?.Quantity,
             Available = game.Inventory?.Available,
             Location = game.Inventory?.Location
@@ -236,7 +181,7 @@ public class GamesController : ControllerBase
                 OriginalUrl = r.OriginalUrl,
                 FileType = r.FileType,
                 Status = r.Status,
-                HasVietnamese = !string.IsNullOrEmpty(r.ContentVi)
+                LocalFileName = !string.IsNullOrEmpty(r.LocalFilePath) ? Path.GetFileName(r.LocalFilePath) : null
             }).ToList();
         }
 
@@ -250,10 +195,8 @@ public class GameDto
     public int Id { get; set; }
     public int BggId { get; set; }
     public string Name { get; set; } = string.Empty;
-    public string? NameVi { get; set; }
     public int? YearPublished { get; set; }
     public string? Description { get; set; }
-    public string? DescriptionVi { get; set; }
     public int? MinPlayers { get; set; }
     public int? MaxPlayers { get; set; }
     public int? MinPlaytime { get; set; }
@@ -263,8 +206,6 @@ public class GameDto
     public string? ImageUrl { get; set; }
     public string? ThumbnailUrl { get; set; }
     public string Status { get; set; } = string.Empty;
-    public bool HasTranslation { get; set; }
-    public string? TranslationStatus { get; set; }
     public int? Quantity { get; set; }
     public int? Available { get; set; }
     public string? Location { get; set; }
@@ -280,7 +221,7 @@ public class RulebookDto
     public string OriginalUrl { get; set; } = string.Empty;
     public string FileType { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
-    public bool HasVietnamese { get; set; }
+    public string? LocalFileName { get; set; }
 }
 
 public class InventoryDto

@@ -1534,3 +1534,161 @@ p {
 .status-pending {
     color: var(--warning-500);
 }
+
+.modal-content.wide {
+    max-width: 95vw;
+    height: 90vh;
+}
+
+.no-padding {
+    padding: 0 !important;
+}
+
+.pdf-modal .modal-body {
+    height: calc(100% - 70px);
+}
+
+#pdf-viewer {
+    border: none;
+}
+
+/* Status variants for rulebooks */
+.status-badge.downloaded {
+    background: var(--success-500);
+}
+
+.status-badge.scraped {
+    background: var(--warning-500);
+}
+
+/* ================================
+   Monitor & Terminal Styles
+   ================================ */
+.terminal-card {
+    background: #1e1e1e !important;
+    border-color: #333 !important;
+}
+
+.terminal-card .card-header {
+    background: #252526 !important;
+    border-bottom: 1px solid #333 !important;
+    color: #cccccc !important;
+}
+
+.terminal-console {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.85rem;
+    padding: var(--space-4);
+    height: 400px;
+    overflow-y: auto;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.log-entry {
+    display: flex;
+    gap: var(--space-3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 2px;
+}
+
+.log-time {
+    color: #569cd6;
+    flex-shrink: 0;
+    font-size: 0.75rem;
+}
+
+.log-message {
+    word-break: break-all;
+}
+
+.log-entry.info .log-message {
+    color: #d4d4d4;
+}
+
+.log-entry.success .log-message {
+    color: #4ade80;
+}
+
+.log-entry.warning .log-message {
+    color: #ce9178;
+}
+
+.log-entry.error .log-message {
+    color: #f44747;
+    font-weight: 500;
+}
+
+.log-entry.debug .log-message {
+    color: #808080;
+}
+
+.log-entry.system .log-message {
+    color: #b5cea8;
+    font-style: italic;
+}
+
+.mini-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-md);
+    min-width: 80px;
+}
+
+.mini-stat .label {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+}
+
+.mini-stat .value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary-500);
+}
+
+.btn-danger {
+    background: var(--error-500);
+    color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+    background: #dc2626;
+    transform: translateY(-2px);
+}
+
+.btn-danger:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-sm {
+    padding: var(--space-1) var(--space-3);
+    font-size: 0.75rem;
+}
+
+/* Scrollbar for terminal */
+.terminal-console::-webkit-scrollbar {
+    width: 10px;
+}
+
+.terminal-console::-webkit-scrollbar-track {
+    background: #1e1e1e;
+}
+
+.terminal-console::-webkit-scrollbar-thumb {
+    background: #333;
+    border: 2px solid #1e1e1e;
+    border-radius: 10px;
+}
+
+.terminal-console::-webkit-scrollbar-thumb:hover {
+    background: #444;
+}

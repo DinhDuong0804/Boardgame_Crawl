@@ -54,7 +54,7 @@ public class BggPlaywrightService
             await page.GotoAsync("https://boardgamegeek.com/login", new PageGotoOptions { WaitUntil = WaitUntilState.Load, Timeout = 60000 });
 
             // Kiểm tra nhiều dấu hiệu đã đăng nhập (Sign Out, hoặc có menu user)
-            var isLoggedIn = await page.Locator("text=Sign Out").IsVisibleAsync() || 
+            var isLoggedIn = await page.Locator("text=Sign Out").IsVisibleAsync() ||
                              await page.Locator(".menu-login-username").IsVisibleAsync() ||
                              await page.Locator("a[href*='/logout']").IsVisibleAsync();
 
@@ -65,23 +65,27 @@ public class BggPlaywrightService
             }
 
             _logger.LogInformation("Not logged in. Finding login fields...");
-            
+
             // Đợi ô username xuất hiện (nếu không thấy sau 5s thì có thể giao diện khác)
-            try {
+            try
+            {
                 await page.WaitForSelectorAsync("input[name='username']", new PageWaitForSelectorOptions { Timeout = 5000 });
-            } catch {
+            }
+            catch
+            {
                 _logger.LogWarning("Username field not found immediately. Checking if we're already on home page...");
-                if ((await page.ContentAsync()).Contains("Sign Out")) return true;
+                if ((await page.ContentAsync()).Contains("Sign Out"))
+                    return true;
             }
 
             await page.FillAsync("input[name='username']", username);
             await page.FillAsync("input[name='password']", password);
-            
+
             _logger.LogInformation("Submitting login form...");
             await page.ClickAsync("button[type='submit'], .btn-primary");
-            
+
             // Wait for navigation or a sign that we are logged in (faster check)
-            try 
+            try
             {
                 await page.WaitForSelectorAsync("text=Sign Out", new PageWaitForSelectorOptions { Timeout = 10000, State = WaitForSelectorState.Attached });
                 _logger.LogInformation("Login verified: 'Sign Out' found.");
@@ -114,7 +118,7 @@ public class BggPlaywrightService
     public async Task<byte[]?> DownloadPdfAsync(string url, string? bggFileId = null)
     {
         await EnsureInitializedAsync();
-        
+
         // Ensure logged in
         await LoginAsync();
 
@@ -122,63 +126,91 @@ public class BggPlaywrightService
         try
         {
             _logger.LogInformation($"Navigating to BGG file page: {url}");
-            
+
             // Start listening for download event
             var downloadTask = page.WaitForDownloadAsync(new PageWaitForDownloadOptions { Timeout = 120000 });
 
             // Navigate to the file page first (important for session/referer)
             _logger.LogInformation($"Navigating to file page: {url}");
-            await page.GotoAsync(url, new PageGotoOptions { WaitUntil = WaitUntilState.NetworkIdle, Timeout = 60000 });
-            
-            // Wait a bit more for background JS to settle
-            await Task.Delay(3000);
-            
-            _logger.LogInformation($"Page loaded. Title: {await page.TitleAsync()}");
+            await page.GotoAsync(url, new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded, Timeout = 60000 });
 
-            // Look for download buttons using selectors from Python script
-            var downloadSelectors = new[] { 
+            _logger.LogInformation($"Page DOM loaded. Title: {await page.TitleAsync()}");
+
+            // Define download selectors in order of preference
+            var downloadSelectors = new[] {
                 "a[href*='/file/download/']",
-                "a[href*='/file/download_redirect/']", 
-                "a[href*='/filepage/download/']", 
+                "a[href*='/file/download_redirect/']",
+                "a[href*='/filepage/download/']",
                 "a[href*='/filepage/download_redirect/']",
                 "a.btn-primary:has-text('Download')",
-                ".btn-primary",
                 "a:has-text('Download')",
-                "button:has-text('Download')"
+                "button:has-text('Download')",
+                ".btn-primary" // Generic fallback
             };
+
+            // Combine specific selectors for waiting
+            var combinedSelector = string.Join(", ", downloadSelectors.Take(7));
 
             string? foundDownloadUrl = null;
             bool clicked = false;
-            foreach (var selector in downloadSelectors)
+
+            try
             {
-                var locator = page.Locator(selector);
-                if (await locator.CountAsync() > 0)
+                _logger.LogInformation("Waiting for download button to appear...");
+                await page.WaitForSelectorAsync(combinedSelector, new PageWaitForSelectorOptions { Timeout = 15000, State = WaitForSelectorState.Visible });
+
+                foreach (var selector in downloadSelectors)
                 {
-                    _logger.LogInformation($"Clicking download button: {selector}");
-                    foundDownloadUrl = await locator.First.GetAttributeAsync("href");
-                    await locator.First.ClickAsync(new LocatorClickOptions { Force = true });
-                    clicked = true;
-                    break;
+                    var locator = page.Locator(selector);
+                    if (await locator.CountAsync() > 0 && await locator.First.IsVisibleAsync())
+                    {
+                        _logger.LogInformation($"Clicking download button: {selector}");
+                        foundDownloadUrl = await locator.First.GetAttributeAsync("href");
+
+                        // Try a normal click first (respects actionability), then fallback to force if needed
+                        try
+                        {
+                            await locator.First.ClickAsync(new LocatorClickOptions { Timeout = 5000 });
+                        }
+                        catch
+                        {
+                            _logger.LogWarning("Regular click failed or timed out, forcing click...");
+                            await locator.First.ClickAsync(new LocatorClickOptions { Force = true });
+                        }
+
+                        clicked = true;
+                        break;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning($"Target download button didn't appear or wasn't clickable within timeout: {ex.Message}");
+                // We'll continue to fallback strategies if not clicked
             }
 
             byte[]? capturedPdf = null;
             string capturedUrl = "";
 
             // Lắng nghe TẤT CẢ các tab mới được mở ra
-            _context!.Page += async (sender, newPage) => {
+            _context!.Page += async (sender, newPage) =>
+            {
                 _logger.LogInformation($"New tab opened: {newPage.Url}");
-                newPage.Response += async (s, response) => {
+                newPage.Response += async (s, response) =>
+                {
                     if (response.Status == 200 && response.Headers.ContainsKey("content-type") && response.Headers["content-type"].Contains("application/pdf"))
                     {
-                        try {
+                        try
+                        {
                             var bytes = await response.BodyAsync();
-                            if (bytes != null && bytes.Length > 1000) {
+                            if (bytes != null && bytes.Length > 1000)
+                            {
                                 capturedPdf = bytes;
                                 capturedUrl = response.Url;
                                 _logger.LogInformation($"Captured PDF from NEW TAB: {capturedUrl} ({bytes.Length} bytes)");
                             }
-                        } catch { }
+                        }
+                        catch { }
                     }
                 };
             };
@@ -188,29 +220,49 @@ public class BggPlaywrightService
             {
                 if (response.Status == 200 && response.Headers.ContainsKey("content-type") && response.Headers["content-type"].Contains("application/pdf"))
                 {
-                    try {
+                    try
+                    {
                         var bytes = await response.BodyAsync();
-                        if (bytes != null && bytes.Length > 1000) {
+                        if (bytes != null && bytes.Length > 1000)
+                        {
                             capturedPdf = bytes;
                             capturedUrl = response.Url;
                             _logger.LogInformation($"Captured PDF from MAIN TAB: {capturedUrl} ({bytes.Length} bytes)");
                         }
-                    } catch { }
+                    }
+                    catch { }
                 }
             };
 
             if (clicked)
             {
-                _logger.LogInformation("Waiting up to 30s for PDF (checking all tabs)...");
+                _logger.LogInformation("Waiting for PDF to be captured (up to 30s)...");
                 var sw = System.Diagnostics.Stopwatch.StartNew();
+                var loggedUrls = new HashSet<string>();
+
                 while (sw.Elapsed.TotalSeconds < 30 && capturedPdf == null)
                 {
                     await Task.Delay(1000);
-                    // Kiểm tra xem có tab nào đang ở URL PDF không
-                    foreach (var p in _context.Pages) {
-                        if (p.Url.ToLower().Contains(".pdf")) {
-                            _logger.LogInformation($"Found a tab with PDF URL: {p.Url}");
+
+                    // Check if any tab is at a PDF URL
+                    foreach (var p in _context.Pages)
+                    {
+                        if (p.Url.ToLower().Contains(".pdf"))
+                        {
+                            if (loggedUrls.Add(p.Url))
+                            {
+                                _logger.LogInformation($"Detected PDF tab: {p.Url}");
+                            }
                         }
+                    }
+
+                    // If we have been waiting more than 5s and we 'see' a PDF URL in a tab
+                    // but Strategy 1 (event detection) hasn't fired, we might want to break early
+                    // and let Strategy 2 (direct fetch) take over.
+                    if (sw.Elapsed.TotalSeconds > 10 && _context.Pages.Any(p => p.Url.ToLower().Contains(".pdf")))
+                    {
+                        _logger.LogDebug("PDF tab detected but bytes not captured via events. Breaking to try fallback strategies.");
+                        break;
                     }
                 }
             }
@@ -226,7 +278,8 @@ public class BggPlaywrightService
                 _logger.LogInformation("Page is currently showing a PDF. Navigating again to capture...");
                 var resp = await page.GotoAsync(page.Url, new PageGotoOptions { WaitUntil = WaitUntilState.NetworkIdle });
                 var bytes = await resp!.BodyAsync();
-                if (bytes != null && bytes.Length > 1000) return bytes;
+                if (bytes != null && bytes.Length > 1000)
+                    return bytes;
             }
 
             // FALLBACK (inspired by Python's APIRequestContext)
@@ -246,10 +299,10 @@ public class BggPlaywrightService
                     foundDownloadUrl = "https://boardgamegeek.com" + foundDownloadUrl;
 
                 _logger.LogInformation($"Using fallback (Strategy 2): Fetching {foundDownloadUrl} using Browser API Request...");
-                
+
                 var requestContext = page.Context.APIRequest;
                 var response = await requestContext.GetAsync(foundDownloadUrl);
-                
+
                 if (response.Status == 200)
                 {
                     var bytes = await response.BodyAsync();
@@ -263,7 +316,7 @@ public class BggPlaywrightService
                 else
                 {
                     _logger.LogWarning($"APIRequest failed with status: {response.Status}");
-                    
+
                     // Strategy 3: Redirected navigation (some PDFs open in viewer)
                     _logger.LogInformation("Trying Strategy 3: Direct navigation and body capture...");
                     var gotoResponse = await page.GotoAsync(foundDownloadUrl, new PageGotoOptions { WaitUntil = WaitUntilState.NetworkIdle, Timeout = 30000 });
@@ -279,7 +332,7 @@ public class BggPlaywrightService
                     }
                 }
             }
-            
+
             _logger.LogWarning("All download strategies failed.");
             await page.ScreenshotAsync(new PageScreenshotOptions { Path = "download_failed_final.png", FullPage = true });
             return null;
@@ -287,7 +340,9 @@ public class BggPlaywrightService
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Error downloading PDF via Playwright from {url}");
-            try { await page.ScreenshotAsync(new PageScreenshotOptions { Path = "download_error.png" }); } catch {}
+            try
+            { await page.ScreenshotAsync(new PageScreenshotOptions { Path = "download_error.png" }); }
+            catch { }
             return null;
         }
         finally
@@ -298,7 +353,9 @@ public class BggPlaywrightService
 
     public async Task DisposeAsync()
     {
-        if (_browser != null) await _browser.CloseAsync();
-        if (_playwright != null) _playwright.Dispose();
+        if (_browser != null)
+            await _browser.CloseAsync();
+        if (_playwright != null)
+            _playwright.Dispose();
     }
 }

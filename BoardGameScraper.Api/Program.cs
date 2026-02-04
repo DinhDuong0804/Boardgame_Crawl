@@ -21,11 +21,6 @@ builder.Services.AddDbContext<BoardGameDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 // ============================================
-// RABBITMQ
-// ============================================
-builder.Services.AddSingleton<RabbitMQService>();
-
-// ============================================
 // APPLICATION SERVICES
 // ============================================
 builder.Services.AddScoped<GameService>();
@@ -37,13 +32,14 @@ builder.Services.AddSingleton<DataExportService>();
 builder.Services.AddSingleton<StateManager>();
 builder.Services.AddSingleton<RulebookScraperService>();
 builder.Services.AddSingleton<WikidataEnrichmentService>();
-builder.Services.AddSingleton<TranslationService>();
 
-// New Translation Services (C# based)
+// New PDF Services (C# based)
 builder.Services.AddScoped<PdfService>();
-builder.Services.AddScoped<GeminiTranslatorService>();
-builder.Services.AddScoped<RulebookTranslationService>();
 builder.Services.AddSingleton<BggPlaywrightService>();
+builder.Services.AddSingleton<BackgroundScraperService>();
+
+// SignalR
+builder.Services.AddSignalR();
 
 // BGG Download Service with HttpClient and Cookies
 builder.Services.AddHttpClient<BggPdfDownloadService>((sp, client) =>
@@ -65,8 +61,6 @@ var enableBackgroundWorkers = builder.Configuration.GetValue<bool>("Scraper:Enab
 if (enableBackgroundWorkers)
 {
     builder.Services.AddHostedService<ScraperWorker>();
-    builder.Services.AddHostedService<RulebookEnrichmentWorker>();
-    builder.Services.AddHostedService<TranslationWorker>();
 }
 
 // ============================================
@@ -120,14 +114,6 @@ builder.Services.AddHttpClient<WikidataEnrichmentService>((sp, client) =>
 })
 .AddStandardResilienceHandler();
 
-// Translation Service (external API)
-builder.Services.AddHttpClient<TranslationService>((sp, client) =>
-{
-    client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
-    client.Timeout = TimeSpan.FromSeconds(120);
-})
-.AddStandardResilienceHandler();
-
 // ============================================
 // BUILD APP
 // ============================================
@@ -175,6 +161,9 @@ app.UseStaticFiles();
 
 app.UseAuthorization();
 app.MapControllers();
+
+// SignalR Hubs
+app.MapHub<BoardGameScraper.Api.Hubs.ScraperHub>("/hubs/scraper");
 
 // Health check endpoint
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));

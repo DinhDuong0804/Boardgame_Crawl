@@ -11,6 +11,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <!-- SignalR Client -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
 </head>
 
 <body>
@@ -46,13 +48,9 @@
                     <span class="tab-icon">🎮</span>
                     Quản Lý Games
                 </button>
-                <button class="tab-btn" data-tab="translation">
-                    <span class="tab-icon">🌐</span>
-                    Dịch Thuật
-                </button>
                 <button class="tab-btn" data-tab="monitor">
-                    <span class="tab-icon">📡</span>
-                    Monitor
+                    <span class="tab-icon">🖥️</span>
+                    Giám Sát
                 </button>
             </nav>
             <div class="header-actions">
@@ -89,13 +87,6 @@
                     <div class="stat-info">
                         <span class="stat-value" id="stat-active">0</span>
                         <span class="stat-label">Đang Hoạt Động</span>
-                    </div>
-                </div>
-                <div class="stat-card gradient-purple">
-                    <div class="stat-icon">🌐</div>
-                    <div class="stat-info">
-                        <span class="stat-value" id="stat-translated">0</span>
-                        <span class="stat-label">Đã Dịch</span>
                     </div>
                 </div>
                 <div class="stat-card gradient-orange">
@@ -136,10 +127,6 @@
                                 <span class="action-icon">✅</span>
                                 <span>Active Games</span>
                             </button>
-                            <button class="action-btn accent" onclick="switchTab('translation')">
-                                <span class="action-icon">🌐</span>
-                                <span>Dịch Game</span>
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -162,6 +149,10 @@
                     </div>
                     <div class="card-body">
                         <p class="description">Cào các game được xếp hạng cao nhất trên BGG</p>
+                        <div class="form-group">
+                            <label for="startPage">Trang bắt đầu</label>
+                            <input type="number" id="startPage" value="1" min="1" class="input">
+                        </div>
                         <div class="form-group">
                             <label for="maxPages">Số trang (mỗi trang ~100 games)</label>
                             <input type="number" id="maxPages" value="1" min="1" max="50" class="input">
@@ -244,7 +235,6 @@
                         <option value="scraped">Đã cào</option>
                         <option value="active">Đang hoạt động</option>
                         <option value="inactive">Không hoạt động</option>
-                        <option value="pending_translation">Đang dịch</option>
                     </select>
                 </div>
                 <div class="filter-group">
@@ -282,13 +272,12 @@
                                 <th>Rating</th>
                                 <th>Rank</th>
                                 <th>Trạng thái</th>
-                                <th>Dịch</th>
                                 <th>Hành động</th>
                             </tr>
                         </thead>
                         <tbody id="games-tbody">
                             <tr>
-                                <td colspan="11" class="loading-row">
+                                <td colspan="10" class="loading-row">
                                     <div class="spinner-small"></div>
                                     <span>Đang tải danh sách games...</span>
                                 </td>
@@ -301,364 +290,54 @@
                 </div>
             </div>
         </section>
-
-        <!-- Translation Tab -->
-        <section id="translation-tab" class="tab-content">
-            <div class="section-header">
-                <h2>🌐 Dịch Rulebook</h2>
-                <p>Upload PDF hoặc tải từ BGG để dịch sang tiếng Việt</p>
-            </div>
-
-            <!-- Game Selection Card -->
-            <div class="card" style="margin-bottom: var(--space-5);">
-                <div class="card-header">
-                    <h3>🎮 Chọn Game từ Database</h3>
-                </div>
-                <div class="card-body">
-                    <div class="form-group">
-                        <label for="game-search">Tìm kiếm game</label>
-                        <div style="display: flex; gap: var(--space-3);">
-                            <input type="text" id="game-search" placeholder="Nhập tên game để tìm..." class="input"
-                                style="flex: 1;" onkeyup="if(event.key === 'Enter') loadGamesForTranslation()">
-                            <button class="btn btn-outline" onclick="loadGamesForTranslation()">
-                                <span>🔍</span> Tìm
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="game-select">Chọn game từ danh sách</label>
-                        <select id="game-select" class="select" onchange="onGameSelected()">
-                            <option value="">-- Chọn một game --</option>
-                        </select>
-                        <small class="help-text" id="game-count">Click "Tìm" để tải danh sách games</small>
-                    </div>
-
-                    <!-- Selected Game Info -->
-                    <div id="selected-game-info"
-                        style="display: none; margin-top: var(--space-4); padding: var(--space-4); background: var(--bg-secondary); border-radius: var(--radius-md);">
-                        <div style="display: flex; gap: var(--space-4); align-items: center;">
-                            <img id="selected-game-image" src="" alt=""
-                                style="width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-sm);"
-                                onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22><rect fill=%22%23ddd%22 width=%2280%22 height=%2280%22/><text x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22 font-size=%2224%22>🎲</text></svg>'">
-                            <div style="flex: 1;">
-                                <h4 id="selected-game-name" style="margin: 0 0 var(--space-2) 0;">Game Name</h4>
-                                <div
-                                    style="display: flex; gap: var(--space-4); font-size: 0.9rem; color: var(--text-muted);">
-                                    <span><strong>BGG ID:</strong> <span id="selected-game-bgg-id">-</span></span>
-                                    <span><strong>Năm:</strong> <span id="selected-game-year">-</span></span>
-                                    <span><strong>Rank:</strong> #<span id="selected-game-rank">-</span></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Rulebooks List Card -->
-            <div class="card" id="rulebooks-list-card" style="display: none; margin-bottom: var(--space-5);">
-                <div class="card-header">
-                    <h3>📚 Danh Sách Rulebooks</h3>
-                    <div style="display: flex; align-items: center; gap: var(--space-3);">
-                        <button class="btn btn-sm btn-outline" onclick="scrapeRulebooksFromBgg()" id="scrape-bgg-btn">
-                            <span>🔍</span> Cào từ BGG
-                        </button>
-                        <span class="badge" id="rulebooks-count-badge">0</span>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <p class="description" id="rulebooks-description">Chọn rulebook để tải và dịch</p>
-
-                    <div id="rulebooks-container"
-                        style="display: grid; gap: var(--space-3); margin-top: var(--space-4);">
-                        <!-- Rulebooks will be dynamically inserted here -->
-                    </div>
-
-                    <div id="no-rulebooks-message"
-                        style="display: none; text-align: center; padding: var(--space-5); color: var(--text-muted);">
-                        <p>⚠️ Không tìm thấy rulebook nào cho game này trong database</p>
-                        <small>Rulebook có thể chưa được crawl hoặc game chưa có rulebook trên BGG</small>
-                    </div>
-                </div>
-            </div>
-
-            <div class="translation-grid">
-                <!-- Upload PDF Card -->
-                <div class="card translation-card">
-                    <div class="card-header">
-                        <h3>� Upload PDF Rulebook</h3>
-                        <span class="badge">Mới</span>
-                    </div>
-                    <div class="card-body">
-                        <p class="description">Upload file PDF rulebook để dịch trực tiếp</p>
-
-                        <div class="form-group">
-                            <label for="pdf-file">Chọn file PDF</label>
-                            <input type="file" id="pdf-file" accept="application/pdf,.pdf" class="input">
-                            <small class="help-text">Tối đa 50MB</small>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="upload-game-name">Tên Game (tùy chọn)</label>
-                            <input type="text" id="upload-game-name" placeholder="VD: Brass Birmingham" class="input">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="upload-bgg-id">BGG ID (tùy chọn)</label>
-                            <input type="number" id="upload-bgg-id" placeholder="VD: 224517" class="input">
-                        </div>
-
-                        <button class="btn btn-primary full-width" onclick="uploadPdfAndTranslate()">
-                            <span>📤</span> Upload và Dịch
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Download from BGG Card -->
-                <div class="card translation-card">
-                    <div class="card-header">
-                        <h3>🔗 Tải từ BGG</h3>
-                        <span class="badge success">Hot</span>
-                    </div>
-                    <div class="card-body">
-                        <p class="description">Tự động tải PDF từ BoardGameGeek và dịch</p>
-
-                        <div class="form-group">
-                            <label for="bgg-url">BGG File URL</label>
-                            <input type="url" id="bgg-url" placeholder="https://boardgamegeek.com/filepage/..."
-                                class="input">
-                            <small class="help-text">URL của file rulebook trên BGG</small>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="bgg-game-name">Tên Game</label>
-                            <input type="text" id="bgg-game-name" placeholder="VD: Brass Birmingham" class="input">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="bgg-game-id">BGG ID</label>
-                            <input type="number" id="bgg-game-id" placeholder="VD: 224517" class="input">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="bgg-rulebook-title">Tiêu đề Rulebook (tùy chọn)</label>
-                            <input type="text" id="bgg-rulebook-title" placeholder="VD: Official Rulebook"
-                                class="input">
-                        </div>
-
-                        <button class="btn btn-accent full-width" onclick="downloadFromBggAndTranslate()">
-                            <span>🔗</span> Tải từ BGG và Dịch
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Translation Progress Card -->
-            <div class="card" id="translation-progress-card" style="display: none; margin-top: var(--space-5);">
-                <div class="card-header">
-                    <h3>⏳ Đang Xử Lý...</h3>
-                </div>
-                <div class="card-body">
-                    <div class="progress-container">
-                        <div class="progress-bar">
-                            <div class="progress-fill indeterminate"></div>
-                        </div>
-                        <p class="progress-text" id="translation-status-text">Đang khởi tạo...</p>
-                    </div>
-                    <div id="translation-log" class="log-container" style="margin-top: var(--space-4);"></div>
-                </div>
-            </div>
-
-            <!-- Translation Result Card -->
-            <div class="card" id="translation-result-card" style="display: none; margin-top: var(--space-5);">
-                <div class="card-header">
-                    <h3>✅ Dịch Hoàn Thành</h3>
-                    <button class="btn btn-sm btn-outline" onclick="hideTranslationResult()">Đóng</button>
-                </div>
-                <div class="card-body">
-                    <div class="result-stats">
-                        <div class="stat-item">
-                            <span class="stat-label">Tên file:</span>
-                            <span class="stat-value" id="result-filename">--</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Số từ trích xuất:</span>
-                            <span class="stat-value" id="result-word-count">0</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Thời gian xử lý:</span>
-                            <span class="stat-value" id="result-processing-time">0s</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Đường dẫn output:</span>
-                            <span class="stat-value" id="result-output-path">--</span>
-                        </div>
-                    </div>
-
-                    <div class="result-preview" style="margin-top: var(--space-4);">
-                        <h4 style="color: var(--accent-color); margin-bottom: var(--space-2);">📄 Bản gốc (Tiếng Anh):
-                        </h4>
-                        <div class="preview-text" id="result-preview-original"
-                            style="margin-bottom: var(--space-4); background: rgba(0,0,0,0.05); border-left: 4px solid var(--accent-color);">
-                            <!-- Original text will be shown here -->
-                        </div>
-
-                        <h4 style="color: var(--success-color); margin-bottom: var(--space-2);">🇻🇳 Bản dịch (Tiếng
-                            Việt):</h4>
-                        <div class="preview-text" id="result-preview-text"
-                            style="background: rgba(var(--success-rgb, 0, 200, 83), 0.05); border-left: 4px solid var(--success-color);">
-                            <!-- Preview text will be shown here -->
-                        </div>
-                    </div>
-
-                    <div class="result-actions" style="margin-top: var(--space-4); display: flex; gap: var(--space-3);">
-                        <button class="btn btn-primary" onclick="viewFullTranslation()">
-                            <span>📄</span> Xem Toàn Bộ
-                        </button>
-                        <button class="btn btn-outline" onclick="downloadMarkdown()">
-                            <span>⬇️</span> Tải Markdown
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Rulebook Preview -->
-            <div class="card rulebook-preview-card">
-                <div class="card-header">
-                    <h3>📚 Preview Rulebook Đã Dịch</h3>
-                    <div class="header-actions">
-                        <select id="rulebook-select" class="select" onchange="loadRulebookPreview()">
-                            <option value="">-- Chọn Rulebook --</option>
-                        </select>
-                        <button class="btn btn-sm btn-accent" onclick="refreshRulebookList()">
-                            <span>🔄</span> Refresh
-                        </button>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="rulebook-viewer" id="rulebook-viewer">
-                        <div class="empty-state">
-                            <span class="empty-icon">📖</span>
-                            <p>Chọn một rulebook để xem preview</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- Monitor Tab -->
         <section id="monitor-tab" class="tab-content">
             <div class="section-header">
-                <h2>📡 Translation Monitor</h2>
-                <p>Theo dõi trạng thái dịch thuật và queue RabbitMQ</p>
+                <h2>🖥️ Giám Sát Tiến Trình</h2>
+                <p>Theo dõi nhật ký cào dữ liệu và trạng thái hệ thống theo thời gian thực</p>
             </div>
 
-            <!-- Service Status -->
-            <div class="stats-grid">
-                <div class="stat-card gradient-blue">
-                    <div class="stat-icon">🔌</div>
-                    <div class="stat-info">
-                        <span class="stat-value" id="monitor-api-status">--</span>
-                        <span class="stat-label">API Status</span>
+            <div class="monitor-controls card">
+                <div class="card-body" style="display: flex; gap: var(--space-4); align-items: flex-end;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Trang bắt đầu</label>
+                        <input type="number" id="monitor-start-page" value="1" min="1" class="input">
                     </div>
-                </div>
-                <div class="stat-card gradient-green">
-                    <div class="stat-icon">🐰</div>
-                    <div class="stat-info">
-                        <span class="stat-value" id="monitor-rabbitmq-status">--</span>
-                        <span class="stat-label">RabbitMQ</span>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Số trang</label>
+                        <input type="number" id="monitor-max-pages" value="5" min="1" class="input">
                     </div>
-                </div>
-                <div class="stat-card gradient-purple">
-                    <div class="stat-icon">📥</div>
-                    <div class="stat-info">
-                        <span class="stat-value" id="monitor-queue-pending">0</span>
-                        <span class="stat-label">Queue Pending</span>
-                    </div>
-                </div>
-                <div class="stat-card gradient-orange">
-                    <div class="stat-icon">🐍</div>
-                    <div class="stat-info">
-                        <span class="stat-value" id="monitor-python-status">--</span>
-                        <span class="stat-label">Translation Service</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="dashboard-grid">
-                <!-- Translation Queue -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3>📋 Translation Queue</h3>
-                        <button class="btn btn-sm btn-outline" onclick="refreshMonitorQueue()">
-                            🔄 Refresh
-                        </button>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-container">
-                            <table class="data-table" id="queue-table">
-                                <thead>
-                                    <tr>
-                                        <th>Game ID</th>
-                                        <th>Tên Game</th>
-                                        <th>Trạng thái</th>
-                                        <th>Thời gian</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="queue-tbody">
-                                    <tr>
-                                        <td colspan="4" class="loading-row">
-                                            <span>Chưa có yêu cầu dịch nào</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    <button class="btn btn-primary" id="monitor-start-btn" onclick="startBulkScrape()">
+                        <span>▶️</span> Bắt Đầu Cào Hàng Loạt
+                    </button>
+                    <button class="btn btn-danger" id="monitor-stop-btn" onclick="stopBulkScrape()" disabled>
+                        <span>⏹️</span> Dừng
+                    </button>
+                    <div class="monitor-stats" style="margin-left: auto; display: flex; gap: var(--space-4);">
+                        <div class="mini-stat">
+                            <span class="label">Đã xử lý:</span>
+                            <span class="value" id="monitor-stat-processed">0</span>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Service Instructions -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3>🚀 Khởi động Translation Service</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="instructions">
-                            <p><strong>Để chạy Python Translation Service:</strong></p>
-                            <div class="code-block">
-                                <code>cd translation-service</code><br>
-                                <code>pip install -r requirements.txt</code><br>
-                                <code>python consumer.py</code>
-                            </div>
-                            <p style="margin-top: 1rem;"><strong>Hoặc sử dụng API server:</strong></p>
-                            <div class="code-block">
-                                <code>python api_server.py</code>
-                            </div>
-                            <p style="margin-top: 1rem; color: var(--text-muted);">Translation service sẽ kết nối đến
-                                RabbitMQ và xử lý các yêu cầu dịch từ queue.</p>
+                        <div class="mini-stat">
+                            <span class="label">Bỏ qua:</span>
+                            <span class="value" id="monitor-stat-skipped">0</span>
+                        </div>
+                        <div class="mini-stat">
+                            <span class="label">Lỗi:</span>
+                            <span class="value" id="monitor-stat-errors">0</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Live Logs -->
-            <div class="card" style="margin-top: var(--space-5);">
-                <div class="card-header">
-                    <h3>📜 Translation Logs</h3>
-                    <div class="header-actions">
-                        <button class="btn btn-sm btn-outline" onclick="clearMonitorLogs()">
-                            🗑️ Clear
-                        </button>
-                        <label class="checkbox-label" style="margin-left: 1rem;">
-                            <input type="checkbox" id="auto-refresh-logs" checked>
-                            <span class="checkmark"></span>
-                            Auto Refresh
-                        </label>
-                    </div>
+            <div class="card terminal-card" style="margin-top: var(--space-4);">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>📜 Nhật Ký Hệ Thống</h3>
+                    <button class="btn btn-ghost btn-sm" onclick="clearMonitorLogs()">Xóa log</button>
                 </div>
                 <div class="card-body">
-                    <div class="log-container" id="monitor-logs" style="min-height: 300px; max-height: 400px;">
-                        <div class="log-entry info">[--:--:--] Chờ kết nối đến Translation Service...</div>
+                    <div id="monitor-console" class="terminal-console">
+                        <div class="log-entry system">Đang chờ kết nối SignalR...</div>
                     </div>
                 </div>
             </div>
@@ -682,8 +361,20 @@
         </div>
     </div>
 
-    <script src="game_selection.js"></script>
-    <script src="translation.js"></script>
+    <!-- PDF Viewer Modal -->
+    <div id="pdf-modal" class="modal pdf-modal">
+        <div class="modal-overlay" onclick="closePdfModal()"></div>
+        <div class="modal-content wide">
+            <div class="modal-header">
+                <h2 id="pdf-modal-title">Xem Rulebook</h2>
+                <button class="modal-close" onclick="closePdfModal()">&times;</button>
+            </div>
+            <div class="modal-body no-padding" id="pdf-modal-body">
+                <iframe id="pdf-viewer" src="" width="100%" height="100%" frameborder="0"></iframe>
+            </div>
+        </div>
+    </div>
+
     <script src="app.js"></script>
 </body>
 

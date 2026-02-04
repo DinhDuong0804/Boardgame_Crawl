@@ -19,18 +19,36 @@ public class BggDiscoveryService
         _config = config;
     }
 
-    public async IAsyncEnumerable<int> DiscoverIdsByRankAsync(int startPage = 1, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct = default)
+    public async IAsyncEnumerable<int> DiscoverIdsByRankAsync(int startPage = 1, int? maxPagesOverride = null, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct = default)
     {
         int page = startPage;
-        int maxPages = _config.GetValue<int>("Scraper:RankMode:MaxPages", 10); // Default 10 pages (~1000 items)
+        int maxPages = maxPagesOverride ?? _config.GetValue<int>("Scraper:RankMode:MaxPages", 10);
 
-        _logger.LogInformation("Phase 1 - Scraping top ranked games (MaxPages: {MaxPages})", maxPages);
+        _logger.LogInformation("Phase 1 - Scraping top ranked games (StartPage: {Start}, MaxPages: {Max})", startPage, maxPages);
 
         while (!ct.IsCancellationRequested)
         {
-            if (page > maxPages)
+            if (page >= startPage + maxPages && maxPagesOverride.HasValue) // Logic: scrape 'maxPages' amount of pages relative to start
             {
-                 _logger.LogInformation("Phase 1 - Reached max configured pages ({Max}). Moving to Phase 2.", maxPages);
+                 // Actually the user semantics might be "scrape UNTIL page X". 
+                 // Let's stick to "MaxPages means total pages to scrape in this run" or "Absolute max page index"?
+                 // Standard browsing usually implies "scrape next N pages".
+                 
+                 // However, the original code treated MaxPages as an absolute limit (Config 10 -> stop at page 10).
+                 // If I pass startPage=11, maxPages=10, I probably want pages 11-20.
+                 // So let's check if we scraped enough.
+            }
+
+            // Simplest interpretation: scrape until page > (startPage + maxPages - 1) if maxPages is "count".
+            // OR if maxPages is "absolute limit", then wait.
+            
+            // Let's treat maxPages as "number of pages to fetch in this request" if override is present.
+            // If checking absolute limit from config, it's different.
+            
+            // Let's simplify: stop if we've processed 'maxPages' pages.
+            if (page >= startPage + maxPages)
+            {
+                 _logger.LogInformation("Phase 1 - Reached max requested pages ({Max}). Stopping.", maxPages);
                  yield break;
             }
 

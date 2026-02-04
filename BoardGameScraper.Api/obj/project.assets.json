@@ -1305,23 +1305,6 @@
           "buildTransitive/Mono.TextTemplating.targets": {}
         }
       },
-      "Mscc.GenerativeAI/1.9.0": {
-        "type": "package",
-        "dependencies": {
-          "Microsoft.Extensions.Logging": "8.0.1",
-          "System.Text.Json": "8.0.5"
-        },
-        "compile": {
-          "lib/net9.0/Mscc.GenerativeAI.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net9.0/Mscc.GenerativeAI.dll": {
-            "related": ".xml"
-          }
-        }
-      },
       "Newtonsoft.Json/13.0.3": {
         "type": "package",
         "compile": {
@@ -1414,23 +1397,6 @@
         "runtime": {
           "lib/net8.0/Polly.RateLimiting.dll": {
             "related": ".pdb;.xml"
-          }
-        }
-      },
-      "RabbitMQ.Client/7.1.2": {
-        "type": "package",
-        "dependencies": {
-          "System.IO.Pipelines": "8.0.0",
-          "System.Threading.RateLimiting": "8.0.0"
-        },
-        "compile": {
-          "lib/net8.0/RabbitMQ.Client.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net8.0/RabbitMQ.Client.dll": {
-            "related": ".xml"
           }
         }
       },
@@ -1960,15 +1926,15 @@
           "lib/netstandard1.3/System.IO.FileSystem.Primitives.dll": {}
         }
       },
-      "System.IO.Pipelines/8.0.0": {
+      "System.IO.Pipelines/7.0.0": {
         "type": "package",
         "compile": {
-          "lib/net8.0/System.IO.Pipelines.dll": {
+          "lib/net7.0/_._": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net8.0/System.IO.Pipelines.dll": {
+          "lib/net7.0/System.IO.Pipelines.dll": {
             "related": ".xml"
           }
         },
@@ -5221,30 +5187,6 @@
         "readme.md"
       ]
     },
-    "Mscc.GenerativeAI/1.9.0": {
-      "sha512": "3yjYjh0pnshxuGPuIidC2OZFKtRFIwhrrScfGcgXRxuUHcShmMiZFXxEQe0zySFa//XFC9X20mr5xchPeaHQow==",
-      "type": "package",
-      "path": "mscc.generativeai/1.9.0",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "LICENSE",
-        "MsccGenerativeAi-icon-nuget.png",
-        "README.md",
-        "lib/net472/Mscc.GenerativeAI.dll",
-        "lib/net472/Mscc.GenerativeAI.xml",
-        "lib/net6.0/Mscc.GenerativeAI.dll",
-        "lib/net6.0/Mscc.GenerativeAI.xml",
-        "lib/net8.0/Mscc.GenerativeAI.dll",
-        "lib/net8.0/Mscc.GenerativeAI.xml",
-        "lib/net9.0/Mscc.GenerativeAI.dll",
-        "lib/net9.0/Mscc.GenerativeAI.xml",
-        "lib/netstandard2.0/Mscc.GenerativeAI.dll",
-        "lib/netstandard2.0/Mscc.GenerativeAI.xml",
-        "mscc.generativeai.1.9.0.nupkg.sha512",
-        "mscc.generativeai.nuspec"
-      ]
-    },
     "Newtonsoft.Json/13.0.3": {
       "sha512": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ==",
       "type": "package",
@@ -5389,23 +5331,6 @@
         "package-readme.md",
         "polly.ratelimiting.8.4.2.nupkg.sha512",
         "polly.ratelimiting.nuspec"
-      ]
-    },
-    "RabbitMQ.Client/7.1.2": {
-      "sha512": "y3c6ulgULScWthHw5PLM1ShHRLhxg0vCtzX/hh61gRgNecL3ZC3WoBW2HYHoXOVRqTl99Br9E7CZEytGZEsCyQ==",
-      "type": "package",
-      "path": "rabbitmq.client/7.1.2",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "README.md",
-        "icon.png",
-        "lib/net8.0/RabbitMQ.Client.dll",
-        "lib/net8.0/RabbitMQ.Client.xml",
-        "lib/netstandard2.0/RabbitMQ.Client.dll",
-        "lib/netstandard2.0/RabbitMQ.Client.xml",
-        "rabbitmq.client.7.1.2.nupkg.sha512",
-        "rabbitmq.client.nuspec"
       ]
     },
     "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
@@ -5610,6 +5535,7 @@
       "path": "system.appcontext/4.1.0",
       "files": [
         ".nupkg.metadata",
+        ".signature.p7s",
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
         "lib/MonoAndroid10/_._",
@@ -6613,10 +6539,10 @@
         "system.io.filesystem.primitives.nuspec"
       ]
     },
-    "System.IO.Pipelines/8.0.0": {
-      "sha512": "FHNOatmUq0sqJOkTx+UF/9YK1f180cnW5FVqnQMvYUN0elp6wFzbtPSiqbo1/ru8ICp43JM1i7kKkk6GsNGHlA==",
+    "System.IO.Pipelines/7.0.0": {
+      "sha512": "jRn6JYnNPW6xgQazROBLSfpdoczRw694vO5kKvMcNnpXuolEixUyw6IBuBs2Y2mlSX/LdLvyyWmfXhaI3ND1Yg==",
       "type": "package",
-      "path": "system.io.pipelines/8.0.0",
+      "path": "system.io.pipelines/7.0.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -6633,11 +6559,9 @@
         "lib/net6.0/System.IO.Pipelines.xml",
         "lib/net7.0/System.IO.Pipelines.dll",
         "lib/net7.0/System.IO.Pipelines.xml",
-        "lib/net8.0/System.IO.Pipelines.dll",
-        "lib/net8.0/System.IO.Pipelines.xml",
         "lib/netstandard2.0/System.IO.Pipelines.dll",
         "lib/netstandard2.0/System.IO.Pipelines.xml",
-        "system.io.pipelines.8.0.0.nupkg.sha512",
+        "system.io.pipelines.7.0.0.nupkg.sha512",
         "system.io.pipelines.nuspec",
         "useSharedDesignerContext.txt"
       ]
@@ -7325,6 +7249,7 @@
       "path": "system.runtime.interopservices.runtimeinformation/4.0.0",
       "files": [
         ".nupkg.metadata",
+        ".signature.p7s",
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
         "lib/MonoAndroid10/_._",
@@ -8459,32 +8384,30 @@
       "Microsoft.EntityFrameworkCore.Design >= 9.0.1",
       "Microsoft.Extensions.Http.Resilience >= 10.2.0",
       "Microsoft.Playwright >= 1.58.0",
-      "Mscc.GenerativeAI >= 1.9.0",
       "Newtonsoft.Json >= 13.0.3",
       "Npgsql.EntityFrameworkCore.PostgreSQL >= 9.0.4",
-      "RabbitMQ.Client >= 7.1.2",
       "System.ServiceModel.Syndication >= 10.0.2",
       "itext7 >= 9.0.0"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Admin\\.nuget\\packages\\": {},
+    "C:\\Users\\Zugooo\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Cafenix\\Boardgame\\Boardgame_Crawl\\BoardGameScraper.Api\\BoardGameScraper.Api.csproj",
+      "projectUniqueName": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\BoardGameScraper.Api.csproj",
       "projectName": "BoardGameScraper.Api",
-      "projectPath": "D:\\Cafenix\\Boardgame\\Boardgame_Crawl\\BoardGameScraper.Api\\BoardGameScraper.Api.csproj",
-      "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-      "outputPath": "D:\\Cafenix\\Boardgame\\Boardgame_Crawl\\BoardGameScraper.Api\\obj\\",
+      "projectPath": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\BoardGameScraper.Api.csproj",
+      "packagesPath": "C:\\Users\\Zugooo\\.nuget\\packages\\",
+      "outputPath": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Zugooo\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -8544,10 +8467,6 @@
             "target": "Package",
             "version": "[1.58.0, )"
           },
-          "Mscc.GenerativeAI": {
-            "target": "Package",
-            "version": "[1.9.0, )"
-          },
           "Newtonsoft.Json": {
             "target": "Package",
             "version": "[13.0.3, )"
@@ -8555,10 +8474,6 @@
           "Npgsql.EntityFrameworkCore.PostgreSQL": {
             "target": "Package",
             "version": "[9.0.4, )"
-          },
-          "RabbitMQ.Client": {
-            "target": "Package",
-            "version": "[7.1.2, )"
           },
           "System.ServiceModel.Syndication": {
             "target": "Package",
@@ -8588,7 +8503,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.102/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.101/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

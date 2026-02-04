@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BoardGameScraper.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c228088c58e66fad652da84f171ad3db7070f390")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ed090d14b60993e3e025135de2bd8e2100ce9361")]
 [assembly: System.Reflection.AssemblyProductAttribute("BoardGameScraper.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BoardGameScraper.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

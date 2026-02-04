@@ -18,7 +18,10 @@ const state = {
     pageSize: 20,
     totalGames: 0,
     isLoading: false,
-    rulebookFiles: []
+    isLoading: false,
+    rulebookFiles: [],
+    scraperConnection: null,
+    isScrapingBulk: false
 };
 
 // ================================
@@ -33,6 +36,7 @@ async function initializeApp() {
     setupEventListeners();
     await checkApiConnection();
     await loadDashboardData();
+    setupScraperSignalR();
 }
 
 // ================================
@@ -68,8 +72,8 @@ function switchTab(tabName) {
         case 'games':
             loadGames();
             break;
-        case 'translation':
-            refreshRulebookList();
+        case 'monitor':
+            updateMonitorStats();
             break;
     }
 }
@@ -128,8 +132,9 @@ async function loadDashboardData() {
         // Load recent games for activity
         const gamesResponse = await fetch(`${API_BASE_URL}/api/games?take=5`);
         if (gamesResponse.ok) {
-            const games = await gamesResponse.json();
-            updateActivityList(games);
+            const data = await gamesResponse.json();
+            // The API now returns { games: [], totalCount: X, ... }
+            updateActivityList(data.games || []);
         }
     } catch (error) {
         console.error('Error loading dashboard:', error);
@@ -142,7 +147,6 @@ async function loadDashboardData() {
 function updateStats(stats) {
     document.getElementById('stat-total').textContent = animateNumber(stats.totalGames || 0);
     document.getElementById('stat-active').textContent = animateNumber(stats.activeGames || 0);
-    document.getElementById('stat-translated').textContent = animateNumber(stats.translatedGames || 0);
     document.getElementById('stat-rulebooks').textContent = animateNumber(stats.totalRulebooks || 0);
 
     // Animate numbers
@@ -153,7 +157,6 @@ function animateStatsNumbers(stats) {
     const counters = [
         { el: 'stat-total', target: stats.totalGames || 0 },
         { el: 'stat-active', target: stats.activeGames || 0 },
-        { el: 'stat-translated', target: stats.translatedGames || 0 },
         { el: 'stat-rulebooks', target: stats.totalRulebooks || 0 }
     ];
 
@@ -208,8 +211,7 @@ function getStatusIcon(status) {
     const icons = {
         'scraped': '🔍',
         'active': '✅',
-        'inactive': '⏸️',
-        'pending_translation': '🌐'
+        'inactive': '⏸️'
     };
     return icons[status] || '📝';
 }
@@ -218,8 +220,7 @@ function getStatusText(status) {
     const texts = {
         'scraped': 'Đã cào dữ liệu',
         'active': 'Đang hoạt động',
-        'inactive': 'Không hoạt động',
-        'pending_translation': 'Đang dịch'
+        'inactive': 'Không hoạt động'
     };
     return texts[status] || status;
 }
@@ -228,16 +229,17 @@ function getStatusText(status) {
 // Scraper Functions
 // ================================
 async function scrapeRanked() {
+    const startPage = parseInt(document.getElementById('startPage').value) || 1;
     const maxPages = parseInt(document.getElementById('maxPages').value) || 1;
     const batchSize = parseInt(document.getElementById('batchSize').value) || 20;
 
     showLoading('Đang cào dữ liệu từ BGG...');
     showScraperProgress();
-    addLog('info', `Bắt đầu cào ${maxPages} trang với batch size ${batchSize}...`);
+    addLog('info', `Bắt đầu cào từ trang ${startPage}, tổng ${maxPages} trang với batch size ${batchSize}...`);
 
     try {
         const response = await fetch(
-            `${API_BASE_URL}/api/scraper/scrape-rank?maxPages=${maxPages}&batchSize=${batchSize}`,
+            `${API_BASE_URL}/api/scraper/scrape-rank?startPage=${startPage}&maxPages=${maxPages}&batchSize=${batchSize}`,
             { method: 'POST' }
         );
 
@@ -348,7 +350,7 @@ async function loadGames() {
     const tbody = document.getElementById('games-tbody');
     tbody.innerHTML = `
         <tr>
-            <td colspan="11" class="loading-row">
+            <td colspan="10" class="loading-row">
                 <div class="spinner-small"></div>
                 <span>Đang tải danh sách games...</span>
             </td>
@@ -366,15 +368,16 @@ async function loadGames() {
 
     try {
         const response = await fetch(url);
-        const games = await response.json();
+        const data = await response.json();
 
-        state.games = games;
-        renderGamesTable(games);
+        state.games = data.games;
+        state.totalGames = data.totalCount;
+        renderGamesTable(data.games);
     } catch (error) {
         console.error('Error loading games:', error);
         tbody.innerHTML = `
             <tr>
-                <td colspan="11" class="loading-row text-error">
+                <td colspan="10" class="loading-row text-error">
                     Lỗi khi tải dữ liệu. Vui lòng thử lại.
                 </td>
             </tr>
@@ -388,7 +391,7 @@ function renderGamesTable(games) {
     if (!games || games.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="11" class="loading-row">
+                <td colspan="10" class="loading-row">
                     Không tìm thấy games nào
                 </td>
             </tr>
@@ -407,7 +410,6 @@ function renderGamesTable(games) {
             </td>
             <td>
                 <div class="game-name" title="${game.name}">${game.name}</div>
-                ${game.nameVi ? `<small style="color: var(--text-muted)">${game.nameVi}</small>` : ''}
             </td>
             <td>${game.yearPublished || '-'}</td>
             <td>${game.minPlayers}-${game.maxPlayers}</td>
@@ -419,26 +421,18 @@ function renderGamesTable(games) {
                     ${getStatusText(game.status)}
                 </span>
             </td>
-            <td>
-                <span class="translation-badge ${game.hasTranslation ? 'yes' : 'no'}">
-                    ${game.hasTranslation ? '✓ Có' : '✗ Chưa'}
-                </span>
-            </td>
             <td class="action-cell">
-                <button class="btn btn-sm btn-outline" onclick="viewGameDetail(${game.id})">
+                <button class="btn btn-sm btn-outline" onclick="viewGameDetail(${game.id})" title="Xem chi tiết">
                     👁️
                 </button>
                 ${game.status !== 'active' ?
-            `<button class="btn btn-sm btn-success" onclick="activateGame(${game.id})">
+            `<button class="btn btn-sm btn-success" onclick="activateGame(${game.id})" title="Kích hoạt">
                         ✓
                     </button>` :
-            `<button class="btn btn-sm btn-danger" onclick="deactivateGame(${game.id})">
+            `<button class="btn btn-sm btn-danger" onclick="deactivateGame(${game.id})" title="Tắt">
                         ✗
                     </button>`
         }
-                <button class="btn btn-sm btn-accent" onclick="translateGame(${game.id})">
-                    🌐
-                </button>
             </td>
         </tr>
     `).join('');
@@ -448,26 +442,55 @@ function renderGamesTable(games) {
 
 function renderPagination() {
     const pagination = document.getElementById('games-pagination');
-    const totalPages = Math.ceil(state.totalGames / state.pageSize) || 5;
+    const totalPages = Math.ceil(state.totalGames / state.pageSize) || 1;
+    const currentPage = state.currentPage;
+    const maxVisiblePages = 7;
 
     let html = `
-        <button onclick="goToPage(${state.currentPage - 1})" ${state.currentPage === 0 ? 'disabled' : ''}>
+        <button onclick="goToPage(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''}>
             ← Trước
         </button>
     `;
 
-    for (let i = 0; i < Math.min(totalPages, 5); i++) {
+    // Calculate page range to display
+    let startPage = Math.max(0, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages);
+
+    // Adjust if we're near the end
+    if (endPage - startPage < maxVisiblePages) {
+        startPage = Math.max(0, endPage - maxVisiblePages);
+    }
+
+    // First page + ellipsis
+    if (startPage > 0) {
+        html += `<button onclick="goToPage(0)">1</button>`;
+        if (startPage > 1) {
+            html += `<span style="padding: 0 8px;">...</span>`;
+        }
+    }
+
+    // Page buttons
+    for (let i = startPage; i < endPage; i++) {
         html += `
-            <button onclick="goToPage(${i})" class="${state.currentPage === i ? 'active' : ''}">
+            <button onclick="goToPage(${i})" class="${currentPage === i ? 'active' : ''}">
                 ${i + 1}
             </button>
         `;
     }
 
+    // Last page + ellipsis
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            html += `<span style="padding: 0 8px;">...</span>`;
+        }
+        html += `<button onclick="goToPage(${totalPages - 1})">${totalPages}</button>`;
+    }
+
     html += `
-        <button onclick="goToPage(${state.currentPage + 1})" ${state.currentPage >= totalPages - 1 ? 'disabled' : ''}>
+        <button onclick="goToPage(${currentPage + 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>
             Sau →
         </button>
+        <span style="margin-left: 16px; color: var(--text-secondary);">Trang ${currentPage + 1} / ${totalPages}</span>
     `;
 
     pagination.innerHTML = html;
@@ -494,6 +517,9 @@ async function viewGameDetail(gameId) {
         const response = await fetch(`${API_BASE_URL}/api/games/${gameId}`);
         const game = await response.json();
 
+        // Store in state for PDF viewer access
+        state.currentGameDetail = game;
+
         showGameModal(game);
     } catch (error) {
         showToast('Không thể tải thông tin game', 'error');
@@ -516,7 +542,6 @@ function showGameModal(game) {
                  class="game-preview-image">
             <div class="game-preview-info">
                 <h4>${game.name}</h4>
-                ${game.nameVi ? `<p style="color: var(--primary-400)">${game.nameVi}</p>` : ''}
                 <div class="meta">
                     <span>📅 ${game.yearPublished || 'N/A'}</span>
                     <span>👥 ${game.minPlayers}-${game.maxPlayers} người</span>
@@ -529,16 +554,9 @@ function showGameModal(game) {
         
         <div style="margin-top: var(--space-5);">
             <h4>Mô tả</h4>
-            <p style="max-height: 150px; overflow-y: auto; font-size: 0.875rem; line-height: 1.6;">
+            <p style="max-height: 250px; overflow-y: auto; font-size: 0.875rem; line-height: 1.6;">
                 ${game.description || 'Chưa có mô tả'}
             </p>
-            
-            ${game.descriptionVi ? `
-                <h4 style="margin-top: var(--space-4); color: var(--primary-400);">Mô tả (Tiếng Việt)</h4>
-                <p style="max-height: 150px; overflow-y: auto; font-size: 0.875rem; line-height: 1.6;">
-                    ${game.descriptionVi}
-                </p>
-            ` : ''}
         </div>
         
         <div style="margin-top: var(--space-5);">
@@ -561,23 +579,43 @@ function showGameModal(game) {
         
         ${game.rulebooks && game.rulebooks.length > 0 ? `
             <div style="margin-top: var(--space-5);">
-                <h4>📚 Rulebooks (${game.rulebooks.length})</h4>
-                <ul style="list-style: none; margin-top: var(--space-2);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-2);">
+                    <h4>📚 Rulebooks (${game.rulebooks.length})</h4>
+                    <button class="btn btn-sm btn-outline" onclick="scrapeRulebooksForGame(${game.bggId})">
+                        🔄 Quét lại
+                    </button>
+                </div>
+                <ul style="list-style: none;">
                     ${game.rulebooks.map(rb => `
-                        <li style="padding: var(--space-2) 0; border-bottom: 1px solid var(--border-light);">
-                            <span>${rb.title}</span>
-                            <span class="status-badge ${rb.status}" style="margin-left: var(--space-2);">
-                                ${rb.status}
-                            </span>
-                            ${rb.hasVietnamese ?
-            '<span class="translation-badge yes">✓ Đã dịch</span>' :
-            '<span class="translation-badge no">✗ Chưa dịch</span>'
+                        <li style="padding: var(--space-2) 0; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">${rb.title}</div>
+                                <span class="status-badge ${rb.status}" style="font-size: 0.7rem; padding: 1px 6px;">
+                                    ${rb.status}
+                                </span>
+                            </div>
+                            <div style="display: flex; gap: var(--space-2);">
+                                ${rb.status === 'downloaded' ?
+            `<button class="btn btn-sm btn-primary" onclick="viewRulebookPdf(${rb.id})">
+                                        👁️ Xem
+                                    </button>` :
+            `<button class="btn btn-sm btn-secondary" onclick="downloadRulebook(${game.bggId}, ${rb.id}, '${rb.originalUrl}', '${rb.title.replace(/'/g, "\\'")}')">
+                                        📥 Tải
+                                    </button>`
         }
+                            </div>
                         </li>
                     `).join('')}
                 </ul>
             </div>
-        ` : ''}
+        ` : `
+            <div style="margin-top: var(--space-5); text-align: center; padding: var(--space-4); background: var(--bg-tertiary); border-radius: var(--radius-md);">
+                <p>Chưa có rulebook nào.</p>
+                <button class="btn btn-primary" style="margin-top: var(--space-2);" onclick="scrapeRulebooksForGame(${game.bggId})">
+                    🔍 Tìm rulebooks trên BGG
+                </button>
+            </div>
+        `}
     `;
 
     modal.classList.add('active');
@@ -629,302 +667,6 @@ async function deactivateGame(gameId) {
     }
 
     hideLoading();
-}
-
-async function translateGame(gameId) {
-    // Switch to translation tab first
-    switchTab('translation');
-
-    // Load games if not loaded yet
-    if (typeof allGames === 'undefined' || allGames.length === 0) {
-        await loadGamesForTranslation();
-    }
-
-    // Try to find and select the game in dropdown
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/games/${gameId}`);
-        if (response.ok) {
-            const game = await response.json();
-
-            // Auto-fill fields
-            document.getElementById('bgg-game-name').value = game.name;
-            document.getElementById('bgg-game-id').value = game.bggId;
-            document.getElementById('upload-game-name').value = game.name;
-            document.getElementById('upload-bgg-id').value = game.bggId;
-
-            // Try to select game in dropdown
-            const select = document.getElementById('game-select');
-            if (select) {
-                // Search for game by bggId
-                for (let i = 0; i < allGames.length; i++) {
-                    if (allGames[i].bggId === game.bggId) {
-                        select.value = i;
-                        onGameSelected();
-                        break;
-                    }
-                }
-            }
-
-            // Also load rulebooks
-            if (game.bggId) {
-                await loadRulebooksForGame(game.bggId);
-            }
-
-            showToast(`Đã chọn game: ${game.name}`, 'success');
-        }
-    } catch (error) {
-        console.error('Error loading game for translation:', error);
-        // Fallback: just fill the old input if exists
-        const oldInput = document.getElementById('translate-game-id');
-        if (oldInput) {
-            oldInput.value = gameId;
-            loadGamePreview();
-        }
-    }
-}
-
-// ================================
-// Translation Functions
-// ================================
-async function loadGamePreview() {
-    const gameId = document.getElementById('translate-game-id').value;
-    const container = document.getElementById('game-preview-container');
-
-    if (!gameId) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <span class="empty-icon">🎮</span>
-                <p>Nhập Game ID và nhấn "Tải Game" để xem thông tin</p>
-            </div>
-        `;
-        return;
-    }
-
-    container.innerHTML = `
-        <div class="empty-state">
-            <div class="spinner-small"></div>
-            <p>Đang tải...</p>
-        </div>
-    `;
-
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/games/${gameId}`);
-
-        if (!response.ok) {
-            throw new Error('Game không tồn tại');
-        }
-
-        const game = await response.json();
-
-        container.innerHTML = `
-            <div class="game-preview">
-                <img src="${game.thumbnailUrl || 'https://via.placeholder.com/120'}" 
-                     alt="${game.name}" 
-                     class="game-preview-image"
-                     style="width: 120px; height: 120px;">
-                <div class="game-preview-info">
-                    <h4>${game.name}</h4>
-                    <div class="meta">
-                        <span>📅 ${game.yearPublished || 'N/A'}</span>
-                        <span>👥 ${game.minPlayers}-${game.maxPlayers}</span>
-                        <span>⭐ ${game.avgRating ? game.avgRating.toFixed(1) : 'N/A'}</span>
-                    </div>
-                    <div style="margin-top: var(--space-2);">
-                        <span class="status-badge ${game.status}">${getStatusText(game.status)}</span>
-                        <span class="translation-badge ${game.hasTranslation ? 'yes' : 'no'}">
-                            ${game.hasTranslation ? '✓ Đã dịch' : '✗ Chưa dịch'}
-                        </span>
-                    </div>
-                    <div class="description" style="margin-top: var(--space-3);">
-                        ${(game.description || '').substring(0, 200)}...
-                    </div>
-                </div>
-            </div>
-        `;
-    } catch (error) {
-        container.innerHTML = `
-            <div class="empty-state text-error">
-                <span class="empty-icon">❌</span>
-                <p>${error.message || 'Không tìm thấy game'}</p>
-            </div>
-        `;
-    }
-}
-
-async function requestTranslation() {
-    const gameId = document.getElementById('translate-game-id').value;
-    const includeRulebooks = document.getElementById('include-rulebooks').checked;
-
-    if (!gameId) {
-        showToast('Vui lòng nhập Game ID', 'warning');
-        return;
-    }
-
-    showLoading('Đang gửi yêu cầu dịch thuật...');
-
-    try {
-        const response = await fetch(
-            `${API_BASE_URL}/api/games/${gameId}/translate?includeRulebooks=${includeRulebooks}`,
-            { method: 'POST' }
-        );
-
-        const result = await response.json();
-
-        if (response.ok || response.status === 202) {
-            showToast(`Đã gửi yêu cầu dịch cho Game ID ${gameId}!`, 'success');
-
-            // Reload preview
-            loadGamePreview();
-        } else {
-            showToast(result.message || 'Có lỗi xảy ra', 'error');
-        }
-    } catch (error) {
-        showToast('Không thể kết nối đến server', 'error');
-    }
-
-    hideLoading();
-}
-
-async function refreshRulebookList() {
-    const select = document.getElementById('rulebook-select');
-    select.innerHTML = '<option value="">Đang tải...</option>';
-
-    try {
-        // Fetch available translated rulebooks from API
-        const response = await fetch(`${API_BASE_URL}/api/rulebooks/translated`);
-
-        if (response.ok) {
-            const rulebooks = await response.json();
-
-            if (rulebooks.length === 0) {
-                select.innerHTML = '<option value="">-- Chưa có rulebook nào được dịch --</option>';
-            } else {
-                select.innerHTML = '<option value="">-- Chọn Rulebook --</option>' +
-                    rulebooks.map(rb =>
-                        `<option value="${rb.path}">${rb.gameName} - ${rb.title}</option>`
-                    ).join('');
-            }
-        } else {
-            // Fallback: try to list local files
-            select.innerHTML = `
-                <option value="">-- Chọn Rulebook --</option>
-                <option value="224517_brass_birmingham_brass_birmingham_reference_she.md">
-                    Brass: Birmingham - Reference Sheet
-                </option>
-                <option value="342942_ark_nova_ark_nova_-_a_plain_and_simple_.md">
-                    Ark Nova - A Plain and Simple Guide
-                </option>
-            `;
-        }
-    } catch (error) {
-        // Fallback with example files
-        select.innerHTML = `
-            <option value="">-- Chọn Rulebook --</option>
-            <option value="224517_brass_birmingham_brass_birmingham_reference_she.md">
-                Brass: Birmingham - Reference Sheet
-            </option>
-            <option value="342942_ark_nova_ark_nova_-_a_plain_and_simple_.md">
-                Ark Nova - A Plain and Simple Guide
-            </option>
-        `;
-    }
-}
-
-async function loadRulebookPreview() {
-    const select = document.getElementById('rulebook-select');
-    const viewer = document.getElementById('rulebook-viewer');
-    const selectedFile = select.value;
-
-    if (!selectedFile) {
-        viewer.innerHTML = `
-            <div class="empty-state">
-                <span class="empty-icon">📖</span>
-                <p>Chọn một rulebook để xem preview</p>
-            </div>
-        `;
-        viewer.classList.remove('has-content');
-        return;
-    }
-
-    viewer.innerHTML = `
-        <div class="empty-state">
-            <div class="spinner-small"></div>
-            <p>Đang tải nội dung...</p>
-        </div>
-    `;
-
-    try {
-        // Try to fetch from API first
-        const response = await fetch(`${API_BASE_URL}/api/rulebooks/content/${encodeURIComponent(selectedFile)}`);
-
-        let content = '';
-
-        if (response.ok) {
-            content = await response.text();
-        } else {
-            // Fallback: try to fetch directly from translation-service output
-            const directResponse = await fetch(`/rulebooks/${selectedFile}`);
-            if (directResponse.ok) {
-                content = await directResponse.text();
-            }
-        }
-
-        if (content) {
-            // Parse markdown and render
-            viewer.innerHTML = parseMarkdown(content);
-            viewer.classList.add('has-content');
-        } else {
-            throw new Error('Không thể tải nội dung');
-        }
-    } catch (error) {
-        viewer.innerHTML = `
-            <div class="empty-state text-error">
-                <span class="empty-icon">❌</span>
-                <p>Không thể tải nội dung rulebook</p>
-                <small>File: ${selectedFile}</small>
-            </div>
-        `;
-        viewer.classList.remove('has-content');
-    }
-}
-
-// Simple Markdown Parser
-function parseMarkdown(text) {
-    // Headers
-    text = text.replace(/^### (.*$)/gim, '<h3>$1</h3>');
-    text = text.replace(/^## (.*$)/gim, '<h2>$1</h2>');
-    text = text.replace(/^# (.*$)/gim, '<h1>$1</h1>');
-
-    // Bold
-    text = text.replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>');
-
-    // Italic
-    text = text.replace(/\*(.*?)\*/gim, '<em>$1</em>');
-
-    // Links
-    text = text.replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2" target="_blank">$1</a>');
-
-    // Horizontal rule
-    text = text.replace(/^---$/gim, '<hr>');
-
-    // Code inline
-    text = text.replace(/`([^`]+)`/gim, '<code>$1</code>');
-
-    // Line breaks
-    text = text.replace(/\n\n/gim, '</p><p>');
-    text = text.replace(/\n/gim, '<br>');
-
-    // Wrap in paragraphs
-    text = '<p>' + text + '</p>';
-
-    // Clean up empty paragraphs
-    text = text.replace(/<p><\/p>/g, '');
-    text = text.replace(/<p>(<h[1-6]>)/g, '$1');
-    text = text.replace(/(<\/h[1-6]>)<\/p>/g, '$1');
-    text = text.replace(/<p>(<hr>)/g, '$1');
-    text = text.replace(/(<hr>)<\/p>/g, '$1');
-
-    return text;
 }
 
 // ================================
@@ -994,171 +736,216 @@ function animateNumber(num) {
 }
 
 // ================================
-// Monitor Tab Functions
+// PDF Viewer & Rulebooks
 // ================================
-let monitorInterval = null;
+function openPdfModal(url, title) {
+    const modal = document.getElementById('pdf-modal');
+    const titleEl = document.getElementById('pdf-modal-title');
+    const viewer = document.getElementById('pdf-viewer');
 
-// Initialize monitor when tab is opened
-function initMonitor() {
-    loadMonitorStatus();
-    loadTranslationQueue();
-
-    // Start auto-refresh if checkbox is checked
-    const autoRefresh = document.getElementById('auto-refresh-logs');
-    if (autoRefresh && autoRefresh.checked) {
-        startMonitorAutoRefresh();
-    }
+    titleEl.textContent = `Xem Rulebook: ${title}`;
+    viewer.src = url;
+    modal.classList.add('active');
 }
 
-function startMonitorAutoRefresh() {
-    if (monitorInterval) clearInterval(monitorInterval);
-
-    monitorInterval = setInterval(() => {
-        const autoRefresh = document.getElementById('auto-refresh-logs');
-        if (autoRefresh && autoRefresh.checked) {
-            loadMonitorStatus();
-            loadTranslationQueue();
-        }
-    }, 5000); // Refresh every 5 seconds
+function closePdfModal() {
+    const modal = document.getElementById('pdf-modal');
+    const viewer = document.getElementById('pdf-viewer');
+    viewer.src = '';
+    modal.classList.remove('active');
 }
 
-function stopMonitorAutoRefresh() {
-    if (monitorInterval) {
-        clearInterval(monitorInterval);
-        monitorInterval = null;
-    }
-}
-
-async function loadMonitorStatus() {
-    // Check API Status
+async function viewRulebookPdf(rulebookId) {
+    showLoading('Đang chuẩn bị xem rulebook...');
     try {
-        const response = await fetch(`${API_BASE_URL}/health`);
-        const apiStatus = document.getElementById('monitor-api-status');
-        if (response.ok) {
-            apiStatus.textContent = 'Online';
-            apiStatus.className = 'stat-value status-online';
+        // Find the rulebook in state.currentGameDetail (from modal)
+        let rulebook = null;
+        if (state.currentGameDetail && state.currentGameDetail.rulebooks) {
+            rulebook = state.currentGameDetail.rulebooks.find(r => r.id === rulebookId);
+        }
+
+        if (rulebook && rulebook.status === 'downloaded' && rulebook.localFileName) {
+            const viewUrl = `${API_BASE_URL}/api/rulebooks/view/${rulebook.localFileName}`;
+            openPdfModal(viewUrl, rulebook.title);
         } else {
-            apiStatus.textContent = 'Error';
-            apiStatus.className = 'stat-value status-offline';
+            showToast('Rulebook chưa được tải xuống máy chủ', 'warning');
         }
     } catch (error) {
-        document.getElementById('monitor-api-status').textContent = 'Offline';
-        document.getElementById('monitor-api-status').className = 'stat-value status-offline';
+        showToast('Lỗi khi mở rulebook', 'error');
     }
+    hideLoading();
+}
 
-    // Check Translation Service (Python)
+async function downloadRulebook(bggId, rulebookId, url, title) {
+    showLoading(`Đang tải rulebook: ${title}...`);
     try {
-        const response = await fetch(`${API_BASE_URL}/api/translation/status`);
-        const pythonStatus = document.getElementById('monitor-python-status');
-        if (response.ok) {
-            const data = await response.json();
-            pythonStatus.textContent = data.connected ? 'Running' : 'Stopped';
-            pythonStatus.className = 'stat-value ' + (data.connected ? 'status-online' : 'status-offline');
+        const response = await fetch(`${API_BASE_URL}/api/rulebooks/download-bgg`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                url: url,
+                bggId: bggId,
+                rulebookTitle: title
+            })
+        });
 
-            // Update RabbitMQ status
-            document.getElementById('monitor-rabbitmq-status').textContent =
-                data.rabbitmqConnected ? 'Connected' : 'Disconnected';
+        if (response.ok) {
+            showToast(`Đã tải xong: ${title}`, 'success');
+            // Refresh detail if modal is open
+            const game = state.games.find(g => g.bggId === bggId);
+            if (game) viewGameDetail(game.id);
         } else {
-            pythonStatus.textContent = 'Unknown';
-            pythonStatus.className = 'stat-value status-pending';
+            const err = await response.json();
+            showToast(err.error || 'Lỗi khi tải rulebook', 'error');
         }
     } catch (error) {
-        document.getElementById('monitor-python-status').textContent = 'Không có API';
-        document.getElementById('monitor-python-status').className = 'stat-value status-offline';
-        document.getElementById('monitor-rabbitmq-status').textContent = 'Unknown';
+        showToast('Lỗi kết nối server', 'error');
+    }
+    hideLoading();
+}
+
+async function scrapeRulebooksForGame(bggId) {
+    showLoading('Đang tìm kiếm rulebooks trên BGG...');
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/rulebooks/game/${bggId}/scrape`, {
+            method: 'POST'
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            showToast(`Thành công! Tìm thấy ${result.found} rulebooks, đã lưu ${result.saved} cái mới.`, 'success');
+            // Refresh detail
+            const game = state.games.find(g => g.bggId === bggId);
+            if (game) viewGameDetail(game.id);
+        } else {
+            showToast(result.error || 'Lỗi khi cào rulebooks', 'error');
+        }
+    } catch (error) {
+        showToast('Lỗi kết nối server', 'error');
+    }
+    hideLoading();
+}
+
+// ================================
+// Bulk Scraper & SignalR (Monitor)
+// ================================
+function setupScraperSignalR() {
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/hubs/scraper")
+        .withAutomaticReconnect()
+        .build();
+
+    connection.on("ReceiveLog", (data) => {
+        addMonitorLog(data.level, data.message, data.timestamp);
+    });
+
+    connection.start()
+        .then(() => {
+            console.log("SignalR Connected to Scraper Hub");
+            addMonitorLog('system', 'SignalR đã kết nối thành công!');
+        })
+        .catch(err => {
+            console.error("SignalR Connection Error: ", err);
+            addMonitorLog('error', 'Lỗi kết nối SignalR: ' + err.toString());
+        });
+
+    state.scraperConnection = connection;
+}
+
+async function startBulkScrape() {
+    const startPage = document.getElementById('monitor-start-page').value || 1;
+    const maxPages = document.getElementById('monitor-max-pages').value || 5;
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/scraper/bulk-start?startPage=${startPage}&maxPages=${maxPages}`, {
+            method: 'POST'
+        });
+
+        if (response.ok) {
+            showToast('Đã bắt đầu tiến trình cào ngầm', 'success');
+            setMonitorScrapingState(true);
+            startStatusPolling();
+        } else {
+            const err = await response.json();
+            showToast(err.message || 'Không thể bắt đầu', 'error');
+        }
+    } catch (error) {
+        showToast('Lỗi kết nối', 'error');
     }
 }
 
-async function loadTranslationQueue() {
-    const tbody = document.getElementById('queue-tbody');
-
+async function stopBulkScrape() {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/games?status=pending_translation&take=20`);
-
+        const response = await fetch(`${API_BASE_URL}/api/scraper/bulk-stop`, { method: 'POST' });
         if (response.ok) {
-            const games = await response.json();
+            showToast('Đã gửi yêu cầu dừng', 'info');
+        }
+    } catch (error) {
+        showToast('Lỗi kết nối', 'error');
+    }
+}
 
-            // Update pending count
-            document.getElementById('monitor-queue-pending').textContent = games.length;
+function setMonitorScrapingState(isScraping) {
+    state.isScrapingBulk = isScraping;
+    document.getElementById('monitor-start-btn').disabled = isScraping;
+    document.getElementById('monitor-stop-btn').disabled = !isScraping;
+}
 
-            if (games.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="4" class="loading-row">
-                            <span>✅ Không có yêu cầu dịch đang chờ</span>
-                        </td>
-                    </tr>
-                `;
-            } else {
-                tbody.innerHTML = games.map(game => `
-                    <tr>
-                        <td>${game.id}</td>
-                        <td>${game.name}</td>
-                        <td>
-                            <span class="status-badge pending_translation">Đang chờ</span>
-                        </td>
-                        <td>${new Date(game.updatedAt || Date.now()).toLocaleString()}</td>
-                    </tr>
-                `).join('');
+let statusPollInterval = null;
+function startStatusPolling() {
+    if (statusPollInterval) clearInterval(statusPollInterval);
+    updateMonitorStats();
+    statusPollInterval = setInterval(updateMonitorStats, 2000);
+}
+
+async function updateMonitorStats() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/scraper/bulk-status`);
+        if (response.ok) {
+            const status = await response.json();
+            document.getElementById('monitor-stat-processed').textContent = status.processed;
+            document.getElementById('monitor-stat-skipped').textContent = status.skipped;
+            document.getElementById('monitor-stat-errors').textContent = status.errors;
+
+            setMonitorScrapingState(status.isScraping);
+
+            if (!status.isScraping && statusPollInterval) {
+                clearInterval(statusPollInterval);
+                statusPollInterval = null;
             }
         }
     } catch (error) {
-        console.error('Error loading queue:', error);
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="4" class="loading-row text-error">
-                    Không thể tải queue
-                </td>
-            </tr>
-        `;
+        console.error('Error polling status:', error);
     }
 }
 
-function refreshMonitorQueue() {
-    loadTranslationQueue();
-    addMonitorLog('info', 'Đã refresh translation queue');
-    showToast('Đã refresh queue!', 'success');
-}
+function addMonitorLog(level, message, timestamp) {
+    const consoleEl = document.getElementById('monitor-console');
+    if (!consoleEl) return;
 
-function addMonitorLog(type, message) {
-    const logsEl = document.getElementById('monitor-logs');
-    if (!logsEl) return;
+    const time = timestamp || new Date().toLocaleTimeString('vi-VN', { hour12: false });
 
-    const time = new Date().toLocaleTimeString();
     const logEntry = document.createElement('div');
-    logEntry.className = `log-entry ${type}`;
-    logEntry.textContent = `[${time}] ${message}`;
+    logEntry.className = `log-entry ${level}`;
+    logEntry.innerHTML = `
+        <span class="log-time">[${time}]</span>
+        <span class="log-message">${message}</span>
+    `;
 
-    logsEl.appendChild(logEntry);
-    logsEl.scrollTop = logsEl.scrollHeight;
+    consoleEl.appendChild(logEntry);
+    consoleEl.scrollTop = consoleEl.scrollHeight;
 
-    // Limit logs to 100 entries
-    while (logsEl.children.length > 100) {
-        logsEl.removeChild(logsEl.firstChild);
+    // Auto-trim long logs
+    if (consoleEl.children.length > 500) {
+        consoleEl.removeChild(consoleEl.firstChild);
     }
 }
 
 function clearMonitorLogs() {
-    const logsEl = document.getElementById('monitor-logs');
-    if (logsEl) {
-        logsEl.innerHTML = '<div class="log-entry info">[--:--:--] Logs đã được xóa</div>';
+    const consoleEl = document.getElementById('monitor-console');
+    if (consoleEl) {
+        consoleEl.innerHTML = '<div class="log-entry system">Đã xóa nhật ký.</div>';
     }
 }
 
-// Update switchTab to initialize monitor
-const originalSwitchTab = switchTab;
-switchTab = function (tabName) {
-    originalSwitchTab(tabName);
-
-    if (tabName === 'monitor') {
-        initMonitor();
-    } else {
-        stopMonitorAutoRefresh();
-    }
-};
-
-// Cleanup on page unload
-window.addEventListener('beforeunload', () => {
-    stopMonitorAutoRefresh();
-});
 

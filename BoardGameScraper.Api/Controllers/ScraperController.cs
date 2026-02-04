@@ -9,9 +9,10 @@ namespace BoardGameScraper.Api.Controllers;
 public class ScraperController : ControllerBase
 {
     private readonly BggDiscoveryService _discoveryService;
-    private readonly BggApiClient _bggApiClient;
+    private readonly BggApiClient _apiClient;
     private readonly RulebookScraperService _rulebookService;
     private readonly GameService _gameService;
+    private readonly BackgroundScraperService _backgroundScraper;
     private readonly ILogger<ScraperController> _logger;
 
     public ScraperController(
@@ -19,12 +20,14 @@ public class ScraperController : ControllerBase
         BggApiClient bggApiClient,
         RulebookScraperService rulebookService,
         GameService gameService,
+        BackgroundScraperService backgroundScraper,
         ILogger<ScraperController> logger)
     {
         _discoveryService = discoveryService;
-        _bggApiClient = bggApiClient;
+        _apiClient = bggApiClient;
         _rulebookService = rulebookService;
         _gameService = gameService;
+        _backgroundScraper = backgroundScraper;
         _logger = logger;
     }
 
@@ -33,28 +36,30 @@ public class ScraperController : ControllerBase
     /// </summary>
     [HttpPost("scrape-rank")]
     public async Task<IActionResult> ScrapeRankedGames(
+        [FromQuery] int startPage = 1,
         [FromQuery] int maxPages = 10,
         [FromQuery] int batchSize = 20,
         CancellationToken ct = default)
     {
-        _logger.LogInformation("Starting manual scrape: {MaxPages} pages", maxPages);
+        _logger.LogInformation("Starting manual scrape: StartPage {StartPage}, MaxPages {MaxPages}", startPage, maxPages);
 
         int totalSaved = 0;
 
         // Collect all IDs from ranked pages using IAsyncEnumerable
         var allIds = new List<int>();
-        await foreach (var id in _discoveryService.DiscoverIdsByRankAsync(1, ct))
+        // Pass maxPages as the count of pages to scrape
+        await foreach (var id in _discoveryService.DiscoverIdsByRankAsync(startPage, maxPages, ct))
         {
             allIds.Add(id);
-            // Limit to approximate number of games based on pages (100 per page)
-            if (allIds.Count >= maxPages * 100)
+            // Safety break if needed, but the service handles the page limit now
+            if (allIds.Count >= maxPages * 105) // Slight buffer for safety
                 break;
         }
 
         if (allIds.Count == 0)
         {
             _logger.LogWarning("No IDs found from discovery");
-            return Ok(new { message = "No games found", gamesProcessed = 0 });
+            return Ok(new { message = "No games found or already processed", gamesProcessed = 0 });
         }
 
         _logger.LogInformation("Discovered {Count} game IDs", allIds.Count);
@@ -68,7 +73,7 @@ public class ScraperController : ControllerBase
             var batchIds = batch.ToList();
 
             // Get game details from BGG API
-            var games = await _bggApiClient.GetGamesDetailsAsync(batchIds, ct);
+            var games = await _apiClient.GetGamesDetailsAsync(batchIds, ct);
 
             // Save to database
             foreach (var game in games)
@@ -106,7 +111,7 @@ public class ScraperController : ControllerBase
         _logger.LogInformation("Scraping game BGG ID: {BggId}", bggId);
 
         // Get game details
-        var games = await _bggApiClient.GetGamesDetailsAsync(new List<int> { bggId }, ct);
+        var games = await _apiClient.GetGamesDetailsAsync(new List<int> { bggId }, ct);
         if (games.Count == 0)
             return NotFound(new { message = $"Game with BGG ID {bggId} not found" });
 
@@ -148,6 +153,44 @@ public class ScraperController : ControllerBase
             message = "Rulebooks scraped",
             gameId = id,
             rulebooksFound = rulebooks.Count
+        });
+    }
+
+    /// <summary>
+    /// Start bulk background scraping
+    /// </summary>
+    [HttpPost("bulk-start")]
+    public IActionResult StartBulkScraping([FromQuery] int startPage = 1, [FromQuery] int maxPages = 5)
+    {
+        if (_backgroundScraper.IsScraping)
+            return BadRequest(new { message = "Scraper is already running" });
+
+        _backgroundScraper.StartScraping(startPage, maxPages);
+        return Ok(new { message = "Bulk scraping started in background" });
+    }
+
+    /// <summary>
+    /// Stop bulk background scraping
+    /// </summary>
+    [HttpPost("bulk-stop")]
+    public IActionResult StopBulkScraping()
+    {
+        _backgroundScraper.StopScraping();
+        return Ok(new { message = "Bulk scraping stop signal sent" });
+    }
+
+    /// <summary>
+    /// Get current status of bulk scraping
+    /// </summary>
+    [HttpGet("bulk-status")]
+    public IActionResult GetBulkStatus()
+    {
+        return Ok(new
+        {
+            isScraping = _backgroundScraper.IsScraping,
+            processed = _backgroundScraper.ProcessedCount,
+            skipped = _backgroundScraper.SkippedCount,
+            errors = _backgroundScraper.ErrorCount
         });
     }
 }

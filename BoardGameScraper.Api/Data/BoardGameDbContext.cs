@@ -11,10 +11,8 @@ public class BoardGameDbContext : DbContext
     }
 
     public DbSet<Game> Games => Set<Game>();
-    public DbSet<GameTranslation> GameTranslations => Set<GameTranslation>();
     public DbSet<Rulebook> Rulebooks => Set<Rulebook>();
     public DbSet<CafeInventory> CafeInventories => Set<CafeInventory>();
-    public DbSet<TranslationQueueItem> TranslationQueue => Set<TranslationQueueItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -26,17 +24,6 @@ public class BoardGameDbContext : DbContext
             entity.HasIndex(e => e.BggId).IsUnique();
             entity.HasIndex(e => e.Status);
             entity.HasIndex(e => e.BggRank);
-        });
-
-        // GameTranslation configuration
-        modelBuilder.Entity<GameTranslation>(entity =>
-        {
-            entity.HasIndex(e => e.GameId).IsUnique();
-            entity.HasIndex(e => e.Status);
-
-            entity.HasOne(t => t.Game)
-                  .WithOne(g => g.Translation)
-                  .HasForeignKey<GameTranslation>(t => t.GameId);
         });
 
         // Rulebook configuration
@@ -58,13 +45,6 @@ public class BoardGameDbContext : DbContext
             entity.HasOne(i => i.Game)
                   .WithOne(g => g.Inventory)
                   .HasForeignKey<CafeInventory>(i => i.GameId);
-        });
-
-        // TranslationQueueItem configuration
-        modelBuilder.Entity<TranslationQueueItem>(entity =>
-        {
-            entity.HasIndex(e => e.Status);
-            entity.HasIndex(e => e.GameId);
         });
     }
 }

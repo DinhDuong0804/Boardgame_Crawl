@@ -135,9 +135,46 @@ public class GameService
             .OrderBy(g => g.BggRank ?? int.MaxValue)
             .Skip(skip)
             .Take(take)
-            .Include(g => g.Translation)
             .Include(g => g.Inventory)
             .ToListAsync(ct);
+    }
+
+    /// <summary>
+    /// Get games with optional filtering and total count for pagination
+    /// </summary>
+    public async Task<(List<Game>, int)> GetGamesWithCountAsync(
+        string? status = null,
+        int? minPlayers = null,
+        int? maxPlayers = null,
+        int? maxPlaytime = null,
+        int skip = 0,
+        int take = 50,
+        CancellationToken ct = default)
+    {
+        var query = _db.Games.AsQueryable();
+
+        if (!string.IsNullOrEmpty(status))
+            query = query.Where(g => g.Status == status);
+
+        if (minPlayers.HasValue)
+            query = query.Where(g => g.MaxPlayers >= minPlayers.Value);
+
+        if (maxPlayers.HasValue)
+            query = query.Where(g => g.MinPlayers <= maxPlayers.Value);
+
+        if (maxPlaytime.HasValue)
+            query = query.Where(g => g.MinPlaytime <= maxPlaytime.Value);
+
+        var totalCount = await query.CountAsync(ct);
+
+        var games = await query
+            .OrderBy(g => g.BggRank ?? int.MaxValue)
+            .Skip(skip)
+            .Take(take)
+            .Include(g => g.Inventory)
+            .ToListAsync(ct);
+
+        return (games, totalCount);
     }
 
     /// <summary>
@@ -146,7 +183,6 @@ public class GameService
     public async Task<Game?> GetGameByIdAsync(int id, CancellationToken ct = default)
     {
         return await _db.Games
-            .Include(g => g.Translation)
             .Include(g => g.Rulebooks)
             .Include(g => g.Inventory)
             .FirstOrDefaultAsync(g => g.Id == id, ct);
@@ -158,7 +194,6 @@ public class GameService
     public async Task<Game?> GetGameByBggIdAsync(int bggId, CancellationToken ct = default)
     {
         return await _db.Games
-            .Include(g => g.Translation)
             .Include(g => g.Rulebooks)
             .FirstOrDefaultAsync(g => g.BggId == bggId, ct);
     }
@@ -213,35 +248,6 @@ public class GameService
     }
 
     /// <summary>
-    /// Update translation for a game (called when translation completes)
-    /// </summary>
-    public async Task UpdateTranslationAsync(
-        int gameId,
-        string? nameVi,
-        string? descriptionVi,
-        bool success,
-        string? errorMessage = null,
-        CancellationToken ct = default)
-    {
-        var translation = await _db.GameTranslations
-            .FirstOrDefaultAsync(t => t.GameId == gameId, ct);
-
-        if (translation == null)
-        {
-            translation = new GameTranslation { GameId = gameId };
-            _db.GameTranslations.Add(translation);
-        }
-
-        translation.NameVi = nameVi;
-        translation.DescriptionVi = descriptionVi;
-        translation.Status = success ? "completed" : "failed";
-        translation.ErrorMessage = errorMessage;
-        translation.CompletedAt = DateTime.UtcNow;
-
-        await _db.SaveChangesAsync(ct);
-    }
-
-    /// <summary>
     /// Get statistics
     /// </summary>
     public async Task<GameStats> GetStatsAsync(CancellationToken ct = default)
@@ -251,10 +257,8 @@ public class GameService
             TotalGames = await _db.Games.CountAsync(ct),
             ScrapedGames = await _db.Games.CountAsync(g => g.Status == "scraped", ct),
             ActiveGames = await _db.Games.CountAsync(g => g.Status == "active", ct),
-            TranslatedGames = await _db.GameTranslations.CountAsync(t => t.Status == "completed", ct),
-            PendingTranslations = await _db.GameTranslations.CountAsync(t => t.Status == "pending", ct),
             TotalRulebooks = await _db.Rulebooks.CountAsync(ct),
-            TranslatedRulebooks = await _db.Rulebooks.CountAsync(r => r.Status == "completed", ct)
+            DownloadedRulebooks = await _db.Rulebooks.CountAsync(r => r.Status == "downloaded", ct)
         };
     }
 }
@@ -264,8 +268,6 @@ public class GameStats
     public int TotalGames { get; set; }
     public int ScrapedGames { get; set; }
     public int ActiveGames { get; set; }
-    public int TranslatedGames { get; set; }
-    public int PendingTranslations { get; set; }
     public int TotalRulebooks { get; set; }
-    public int TranslatedRulebooks { get; set; }
+    public int DownloadedRulebooks { get; set; }
 }

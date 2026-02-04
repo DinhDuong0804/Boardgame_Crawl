@@ -21,17 +21,11 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     
-    <!-- RabbitMQ -->
-    <PackageReference Include="RabbitMQ.Client" Version="7.1.2" />
-    
     <!-- JSON -->
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     
     <!-- PDF Processing - iText7 for PDF text extraction -->
     <PackageReference Include="itext7" Version="9.0.0" />
-    
-    <!-- Google Gemini AI -->
-    <PackageReference Include="Mscc.GenerativeAI" Version="1.9.0" />
   </ItemGroup>
 
 </Project>
