@@ -1074,9 +1074,10 @@ D:\Downloads\board_game_scraper-2.23.1\BoardGameScraper.Api\bin\Debug\net9.0\ite
 D:\Downloads\board_game_scraper-2.23.1\BoardGameScraper.Api\bin\Debug\net9.0\itext.commons.dll
 D:\Downloads\board_game_scraper-2.23.1\BoardGameScraper.Api\bin\Debug\net9.0\Microsoft.DotNet.PlatformAbstractions.dll
 D:\Downloads\board_game_scraper-2.23.1\BoardGameScraper.Api\bin\Debug\net9.0\Microsoft.Playwright.dll
-D:\Downloads\board_game_scraper-2.23.1\BoardGameScraper.Api\obj\Debug\net9.0\compressed\b2k93tru66-{0}-dta03l2e5n-dta03l2e5n.gz
-D:\Downloads\board_game_scraper-2.23.1\BoardGameScraper.Api\obj\Debug\net9.0\compressed\ahuhj1k5p7-{0}-xhvq13xggl-xhvq13xggl.gz
-D:\Downloads\board_game_scraper-2.23.1\BoardGameScraper.Api\obj\Debug\net9.0\compressed\oi7dzrhmhz-{0}-lt02yqca5v-lt02yqca5v.gz
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\obj\Debug\net9.0\compressed\b2k93tru66-{0}-dta03l2e5n-dta03l2e5n.gz
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\obj\Debug\net9.0\compressed\ahuhj1k5p7-{0}-xhvq13xggl-xhvq13xggl.gz
 D:\Cafenix\Boardgame\Boardgame_Crawl\BoardGameScraper.Api\obj\Debug\net9.0\compressed\oi7dzrhmhz-{0}-lt02yqca5v-lt02yqca5v.gz
+D:\Downloads\board_game_scraper-2.23.1\BoardGameScraper.Api\obj\Debug\net9.0\compressed\b2k93tru66-{0}-oh1baq2vqp-oh1baq2vqp.gz
+D:\Downloads\board_game_scraper-2.23.1\BoardGameScraper.Api\obj\Debug\net9.0\compressed\ahuhj1k5p7-{0}-5thazq0mx8-5thazq0mx8.gz
+D:\Downloads\board_game_scraper-2.23.1\BoardGameScraper.Api\obj\Debug\net9.0\compressed\oi7dzrhmhz-{0}-5hec4prz84-5hec4prz84.gz
+D:\Downloads\board_game_scraper-2.23.1\BoardGameScraper.Api\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt

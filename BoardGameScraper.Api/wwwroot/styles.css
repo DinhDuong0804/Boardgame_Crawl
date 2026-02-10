@@ -276,19 +276,22 @@ p {
    Header
    ================================ */
 .header {
-    background: var(--gradient-header);
+    background: var(--bg-secondary);
     position: sticky;
     top: 0;
     z-index: 100;
-    box-shadow: var(--shadow-md);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    height: 72px;
 }
 
 .header-content {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--space-4) var(--space-6);
+    padding: 0 var(--space-6);
     max-width: 1600px;
+    height: 100%;
     margin: 0 auto;
     gap: var(--space-6);
 }
@@ -300,98 +303,89 @@ p {
 }
 
 .logo-icon {
-    font-size: 2.5rem;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-    animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-
-    0%,
-    100% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.05);
-    }
+    font-size: 2.25rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .logo-text h1 {
-    font-size: 1.25rem;
-    color: white;
+    font-size: 1.15rem;
+    color: var(--text-primary);
+    font-weight: 700;
 }
 
 .logo-text span {
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.05em;
 }
 
 /* Navigation Tabs */
 .nav-tabs {
     display: flex;
-    gap: var(--space-2);
-    background: rgba(255, 255, 255, 0.15);
-    padding: var(--space-1);
+    gap: var(--space-1);
+    background: var(--bg-tertiary);
+    padding: 4px;
     border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
 }
 
 .tab-btn {
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    padding: var(--space-3) var(--space-5);
+    padding: 8px 16px;
     background: transparent;
     border: none;
-    color: rgba(255, 255, 255, 0.85);
-    font-size: 0.875rem;
-    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 0.825rem;
+    font-weight: 600;
     border-radius: var(--radius-md);
     cursor: pointer;
     transition: all var(--transition-normal);
 }
 
 .tab-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
+    background: rgba(99, 102, 241, 0.05);
+    color: var(--primary-600);
 }
 
 .tab-btn.active {
     background: white;
     color: var(--primary-600);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .tab-icon {
-    font-size: 1.1rem;
+    font-size: 1rem;
 }
 
 /* Header Actions */
 .header-actions {
     display: flex;
     align-items: center;
-    gap: var(--space-4);
+    gap: var(--space-3);
 }
 
 .connection-status {
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    padding: var(--space-2) var(--space-4);
-    background: rgba(255, 255, 255, 0.15);
+    padding: 6px 12px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
     border-radius: var(--radius-full);
     font-size: 0.75rem;
-    color: white;
+    color: var(--text-secondary);
 }
 
 .status-dot {
-    width: 8px;
-    height: 8px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     background: var(--warning-500);
-    animation: blink 1.5s ease-in-out infinite;
 }
 
 .status-dot.connected {
@@ -560,13 +554,35 @@ p {
 }
 
 .badge {
-    padding: var(--space-1) var(--space-3);
-    background: var(--gradient-orange);
-    color: white;
-    font-size: 0.7rem;
-    font-weight: 600;
-    border-radius: var(--radius-full);
-    text-transform: uppercase;
+    padding: 6px 14px;
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    text-transform: none;
+    display: inline-flex;
+    align-items: center;
+    transition: all var(--transition-fast);
+}
+
+.badge:hover {
+    border-color: var(--primary-400);
+    color: var(--primary-600);
+    background: var(--primary-50);
+}
+
+.badge-category {
+    background: rgba(99, 102, 241, 0.08);
+    color: var(--primary-700);
+    border-color: rgba(99, 102, 241, 0.2);
+}
+
+.badge-mechanic {
+    background: rgba(139, 92, 246, 0.08);
+    color: var(--accent-500);
+    border-color: rgba(139, 92, 246, 0.2);
 }
 
 /* ================================
@@ -1553,12 +1569,24 @@ p {
 }
 
 /* Status variants for rulebooks */
+.status-badge {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
 .status-badge.downloaded {
-    background: var(--success-500);
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success-600);
+    border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
 .status-badge.scraped {
-    background: var(--warning-500);
+    background: rgba(245, 158, 11, 0.1);
+    color: #b45309;
+    border: 1px solid rgba(245, 158, 11, 0.2);
 }
 
 /* ================================

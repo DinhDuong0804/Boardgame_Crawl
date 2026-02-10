@@ -128,13 +128,61 @@ public class RulebookController : ControllerBase
             return BadRequest();
 
         var safeFileName = Uri.UnescapeDataString(Path.GetFileName(fileName));
-        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "output", "pdfs", safeFileName);
+        var pdfDir = Path.Combine(Directory.GetCurrentDirectory(), "output", "pdfs");
+        var filePath = Path.Combine(pdfDir, safeFileName);
 
         _logger.LogInformation("Attempting to view PDF: {FilePath}", filePath);
 
         if (!System.IO.File.Exists(filePath))
         {
-            _logger.LogWarning("PDF file not found: {FilePath}", filePath);
+            _logger.LogWarning("PDF file not found with exact match: {FilePath}", filePath);
+
+            // Try to find similar file by extracting key parts
+            // Remove BGG ID prefix and file extension, then search
+            var fileNameWithoutExt = Path.GetFileNameWithoutExtension(safeFileName);
+
+            // Extract potential BGG ID and title parts
+            var parts = fileNameWithoutExt.Split('_', 2);
+            string searchPattern = "*";
+
+            if (parts.Length > 1 && parts[1].Length > 3)
+            {
+                // Use title part for searching (skip BGG ID)
+                var titlePart = parts[1].Replace(" ", "*").Replace("_", "*");
+                searchPattern = $"*{titlePart}*.pdf";
+            }
+            else
+            {
+                // Fallback: use whole filename
+                searchPattern = $"*{fileNameWithoutExt.Replace(" ", "*")}*.pdf";
+            }
+
+            _logger.LogInformation("Searching with pattern: {Pattern}", searchPattern);
+
+            if (Directory.Exists(pdfDir))
+            {
+                var matches = Directory.GetFiles(pdfDir, searchPattern, SearchOption.TopDirectoryOnly);
+
+                if (matches.Length > 0)
+                {
+                    // Use first match
+                    filePath = matches[0];
+                    _logger.LogInformation("Found matching file: {MatchedFile}", Path.GetFileName(filePath));
+                }
+                else
+                {
+                    _logger.LogWarning("No matching files found for pattern: {Pattern}", searchPattern);
+                    return NotFound(new { error = "File not found", path = safeFileName, searchPattern });
+                }
+            }
+            else
+            {
+                return NotFound(new { error = "PDF directory not found" });
+            }
+        }
+
+        if (!System.IO.File.Exists(filePath))
+        {
             return NotFound(new { error = "File not found", path = safeFileName });
         }
 
@@ -170,7 +218,7 @@ public class RulebookController : ControllerBase
 
                 if (existing == null)
                 {
-                    var entity = new BoardGameScraper.Api.Data.Entities.Rulebook
+                    var entity = new Data.Entities.Rulebook
                     {
                         GameId = game.Id,
                         Title = rb.Title,

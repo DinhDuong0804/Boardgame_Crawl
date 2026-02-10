@@ -562,18 +562,20 @@ function showGameModal(game) {
         <div style="margin-top: var(--space-5);">
             <h4>Thể loại</h4>
             <div style="display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-2);">
-                ${(game.categories || []).map(cat =>
-        `<span class="badge" style="background: var(--primary-700)">${cat}</span>`
-    ).join('') || '<span class="text-muted">Chưa có</span>'}
+                ${(game.categories || []).map(cat => {
+        const nameOnly = cat.split(':')[0].trim();
+        return `<span class="badge badge-category">${nameOnly}</span>`;
+    }).join('') || '<span class="text-muted">Chưa có</span>'}
             </div>
         </div>
         
         <div style="margin-top: var(--space-4);">
             <h4>Mechanics</h4>
             <div style="display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-2);">
-                ${(game.mechanics || []).map(mech =>
-        `<span class="badge" style="background: var(--accent-500)">${mech}</span>`
-    ).join('') || '<span class="text-muted">Chưa có</span>'}
+                ${(game.mechanics || []).map(mech => {
+        const nameOnly = mech.split(':')[0].trim();
+        return `<span class="badge badge-mechanic">${nameOnly}</span>`;
+    }).join('') || '<span class="text-muted">Chưa có</span>'}
             </div>
         </div>
         

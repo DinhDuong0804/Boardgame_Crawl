@@ -3,16 +3,52 @@
   "WorkspaceRootPath": "D:\\Downloads\\board_game_scraper-2.23.1\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|d:\\downloads\\board_game_scraper-2.23.1\\boardgamescraper.api\\bgg_rank.jsonl||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|solutionrelative:boardgamescraper.api\\bgg_rank.jsonl||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|d:\\downloads\\board_game_scraper-2.23.1\\boardgamescraper.api\\wwwroot\\app.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|solutionrelative:boardgamescraper.api\\wwwroot\\app.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|d:\\downloads\\board_game_scraper-2.23.1\\boardgamescraper.api\\services\\statemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|solutionrelative:boardgamescraper.api\\services\\statemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|d:\\downloads\\board_game_scraper-2.23.1\\boardgamescraper.api\\controllers\\rulebookcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|solutionrelative:boardgamescraper.api\\controllers\\rulebookcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|d:\\downloads\\board_game_scraper-2.23.1\\boardgamescraper.api\\services\\backgroundscraperservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|solutionrelative:boardgamescraper.api\\services\\backgroundscraperservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|d:\\downloads\\board_game_scraper-2.23.1\\boardgamescraper.api\\models\\scraperstate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|solutionrelative:boardgamescraper.api\\models\\scraperstate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|d:\\downloads\\board_game_scraper-2.23.1\\boardgamescraper.api\\models\\gameitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|solutionrelative:boardgamescraper.api\\models\\gameitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|d:\\downloads\\board_game_scraper-2.23.1\\boardgamescraper.api\\hubs\\scraperhub.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|solutionrelative:boardgamescraper.api\\hubs\\scraperhub.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|d:\\downloads\\board_game_scraper-2.23.1\\boardgamescraper.api\\data\\game.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|solutionrelative:boardgamescraper.api\\data\\game.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|d:\\downloads\\board_game_scraper-2.23.1\\boardgamescraper.api\\data\\cafeinventory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|solutionrelative:boardgamescraper.api\\data\\cafeinventory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|d:\\downloads\\board_game_scraper-2.23.1\\boardgamescraper.api\\data\\rulebook.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|solutionrelative:boardgamescraper.api\\data\\rulebook.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|d:\\downloads\\board_game_scraper-2.23.1\\boardgamescraper.api\\data\\boardgamedbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|solutionrelative:boardgamescraper.api\\data\\boardgamedbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|d:\\downloads\\board_game_scraper-2.23.1\\boardgamescraper.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|solutionrelative:boardgamescraper.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|d:\\downloads\\board_game_scraper-2.23.1\\boardgamescraper.api\\services\\statemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|solutionrelative:boardgamescraper.api\\services\\statemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|d:\\downloads\\board_game_scraper-2.23.1\\boardgamescraper.api\\services\\bggapiclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -25,10 +61,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|d:\\downloads\\board_game_scraper-2.23.1\\boardgamescraper.api\\services\\bggdiscoveryservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|solutionrelative:boardgamescraper.api\\services\\bggdiscoveryservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|d:\\downloads\\board_game_scraper-2.23.1\\boardgamescraper.api\\models\\gameitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{557DCB4D-EBED-8584-FCE9-318341462EF2}|BoardGameScraper.Api\\BoardGameScraper.Api.csproj|solutionrelative:boardgamescraper.api\\models\\gameitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -71,45 +103,136 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "bgg_rank.jsonl",
-              "DocumentMoniker": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\bgg_rank.jsonl",
-              "RelativeDocumentMoniker": "BoardGameScraper.Api\\bgg_rank.jsonl",
-              "ToolTip": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\bgg_rank.jsonl",
-              "RelativeToolTip": "BoardGameScraper.Api\\bgg_rank.jsonl",
-              "ViewState": "AgIAADgBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-01-19T00:59:06.853Z",
+              "Title": "app.js",
+              "DocumentMoniker": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\wwwroot\\app.js",
+              "RelativeDocumentMoniker": "BoardGameScraper.Api\\wwwroot\\app.js",
+              "ToolTip": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\wwwroot\\app.js",
+              "RelativeToolTip": "BoardGameScraper.Api\\wwwroot\\app.js",
+              "ViewState": "AgIAAHYAAAAAAAAAAAAgwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-02-04T23:35:51.199Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "StateManager.cs",
-              "DocumentMoniker": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\Services\\StateManager.cs",
-              "RelativeDocumentMoniker": "BoardGameScraper.Api\\Services\\StateManager.cs",
-              "ToolTip": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\Services\\StateManager.cs",
-              "RelativeToolTip": "BoardGameScraper.Api\\Services\\StateManager.cs",
-              "ViewState": "AgIAAAsAAAAAAAAAAAAQwA8AAAAZAAAAAAAAAA==",
+              "Title": "RulebookController.cs",
+              "DocumentMoniker": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\Controllers\\RulebookController.cs",
+              "RelativeDocumentMoniker": "BoardGameScraper.Api\\Controllers\\RulebookController.cs",
+              "ToolTip": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\Controllers\\RulebookController.cs",
+              "RelativeToolTip": "BoardGameScraper.Api\\Controllers\\RulebookController.cs",
+              "ViewState": "AgIAAEIAAAAAAAAAAAAowCMAAAARAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-18T05:07:18.653Z",
+              "WhenOpened": "2026-02-04T23:35:06.02Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ScraperState.cs",
+              "DocumentMoniker": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\Models\\ScraperState.cs",
+              "RelativeDocumentMoniker": "BoardGameScraper.Api\\Models\\ScraperState.cs",
+              "ToolTip": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\Models\\ScraperState.cs",
+              "RelativeToolTip": "BoardGameScraper.Api\\Models\\ScraperState.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-04T15:18:23.426Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
+              "Title": "BackgroundScraperService.cs",
+              "DocumentMoniker": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\Services\\BackgroundScraperService.cs",
+              "RelativeDocumentMoniker": "BoardGameScraper.Api\\Services\\BackgroundScraperService.cs",
+              "ToolTip": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\Services\\BackgroundScraperService.cs*",
+              "RelativeToolTip": "BoardGameScraper.Api\\Services\\BackgroundScraperService.cs*",
+              "ViewState": "AgIAAIcAAAAAAAAAAAAAwDYAAAAGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-04T15:17:50.588Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ScraperHub.cs",
+              "DocumentMoniker": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\Hubs\\ScraperHub.cs",
+              "RelativeDocumentMoniker": "BoardGameScraper.Api\\Hubs\\ScraperHub.cs",
+              "ToolTip": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\Hubs\\ScraperHub.cs",
+              "RelativeToolTip": "BoardGameScraper.Api\\Hubs\\ScraperHub.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-04T15:17:43.982Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Rulebook.cs",
+              "DocumentMoniker": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\Data\\Rulebook.cs",
+              "RelativeDocumentMoniker": "BoardGameScraper.Api\\Data\\Rulebook.cs",
+              "ToolTip": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\Data\\Rulebook.cs",
+              "RelativeToolTip": "BoardGameScraper.Api\\Data\\Rulebook.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-04T15:16:02.855Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "CafeInventory.cs",
+              "DocumentMoniker": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\Data\\CafeInventory.cs",
+              "RelativeDocumentMoniker": "BoardGameScraper.Api\\Data\\CafeInventory.cs",
+              "ToolTip": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\Data\\CafeInventory.cs",
+              "RelativeToolTip": "BoardGameScraper.Api\\Data\\CafeInventory.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-04T15:15:46.352Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Game.cs",
+              "DocumentMoniker": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\Data\\Game.cs",
+              "RelativeDocumentMoniker": "BoardGameScraper.Api\\Data\\Game.cs",
+              "ToolTip": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\Data\\Game.cs",
+              "RelativeToolTip": "BoardGameScraper.Api\\Data\\Game.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAPAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-04T15:15:11.17Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "BoardGameDbContext.cs",
+              "DocumentMoniker": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\Data\\BoardGameDbContext.cs",
+              "RelativeDocumentMoniker": "BoardGameScraper.Api\\Data\\BoardGameDbContext.cs",
+              "ToolTip": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\Data\\BoardGameDbContext.cs",
+              "RelativeToolTip": "BoardGameScraper.Api\\Data\\BoardGameDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-04T15:15:10.45Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
               "Title": "appsettings.json",
               "DocumentMoniker": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\appsettings.json",
               "RelativeDocumentMoniker": "BoardGameScraper.Api\\appsettings.json",
               "ToolTip": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\appsettings.json",
               "RelativeToolTip": "BoardGameScraper.Api\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2026-01-18T05:03:59.068Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 12,
               "Title": "BggApiClient.cs",
               "DocumentMoniker": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\Services\\BggApiClient.cs",
               "RelativeDocumentMoniker": "BoardGameScraper.Api\\Services\\BggApiClient.cs",
@@ -117,12 +240,37 @@
               "RelativeToolTip": "BoardGameScraper.Api\\Services\\BggApiClient.cs",
               "ViewState": "AgIAACYAAAAAAAAAAAAqwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-18T04:04:38.369Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-18T04:04:38.369Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 4,
+              "Title": "GameItem.cs",
+              "DocumentMoniker": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\Models\\GameItem.cs",
+              "RelativeDocumentMoniker": "BoardGameScraper.Api\\Models\\GameItem.cs",
+              "ToolTip": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\Models\\GameItem.cs",
+              "RelativeToolTip": "BoardGameScraper.Api\\Models\\GameItem.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-18T04:03:19.647Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "StateManager.cs",
+              "DocumentMoniker": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\Services\\StateManager.cs",
+              "RelativeDocumentMoniker": "BoardGameScraper.Api\\Services\\StateManager.cs",
+              "ToolTip": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\Services\\StateManager.cs",
+              "RelativeToolTip": "BoardGameScraper.Api\\Services\\StateManager.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAQwB4AAABDAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-18T05:07:18.653Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
               "Title": "DataExportService.cs",
               "DocumentMoniker": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\Services\\DataExportService.cs",
               "RelativeDocumentMoniker": "BoardGameScraper.Api\\Services\\DataExportService.cs",
@@ -130,12 +278,11 @@
               "RelativeToolTip": "BoardGameScraper.Api\\Services\\DataExportService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-18T04:04:29.448Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-18T04:04:29.448Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 14,
               "Title": "BggDiscoveryService.cs",
               "DocumentMoniker": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\Services\\BggDiscoveryService.cs",
               "RelativeDocumentMoniker": "BoardGameScraper.Api\\Services\\BggDiscoveryService.cs",
@@ -143,21 +290,7 @@
               "RelativeToolTip": "BoardGameScraper.Api\\Services\\BggDiscoveryService.cs",
               "ViewState": "AgIAAFcAAAAAAAAAAAAowD0AAABWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-18T04:03:49.241Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "GameItem.cs",
-              "DocumentMoniker": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\Models\\GameItem.cs",
-              "RelativeDocumentMoniker": "BoardGameScraper.Api\\Models\\GameItem.cs",
-              "ToolTip": "D:\\Downloads\\board_game_scraper-2.23.1\\BoardGameScraper.Api\\Models\\GameItem.cs",
-              "RelativeToolTip": "BoardGameScraper.Api\\Models\\GameItem.cs",
-              "ViewState": "AgIAABgAAAAAAAAAAAAmwAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-18T04:03:19.647Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-18T04:03:49.241Z"
             }
           ]
         }

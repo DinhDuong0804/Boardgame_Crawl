@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 using BoardGameScraper.Api.Hubs;
 using BoardGameScraper.Api.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace BoardGameScraper.Api.Services;
 
@@ -47,11 +48,11 @@ public class BackgroundScraperService
         _ = Task.Run(() => RunScrapeOperation(startPage, maxPages, batchSize, _cts.Token));
     }
 
-    public void StopScraping()
+    public async Task StopScraping()
     {
         _cts?.Cancel();
         _isScraping = false;
-        LogAsync("Scraping stop requested by user.", "info");
+       await  LogAsync("Scraping stop requested by user.", "info");
     }
 
     private async Task RunScrapeOperation(int startPage, int maxPages, int batchSize, CancellationToken ct)
